@@ -129,35 +129,53 @@ export function IconStar({ className = "h-4 w-4" }: IconProps) {
   );
 }
 
-const SHAPES = [
-  "rounded-[5px]",
-  "rounded-full",
-  "rounded-[38%_6px_38%_6px]",
-] as const;
-
 export function CompanyMark({
   company,
   size = "md",
 }: {
-  company: Company;
+  company: { name: string; hue?: number; logo?: string };
   size?: "sm" | "md" | "lg";
 }) {
   const dims =
     size === "lg"
-      ? "h-14 w-14 text-xl"
+      ? "h-14 w-14 text-2xl"
       : size === "sm"
-        ? "h-9 w-9 text-sm"
-        : "h-11 w-11 text-base";
+        ? "h-9 w-9 text-base"
+        : "h-11 w-11 text-lg";
+  const hue = company.hue ?? 220;
   return (
     <span
-      className={`grid shrink-0 place-items-center font-display font-bold ${dims} ${SHAPES[company.shape]}`}
+      className={`grid shrink-0 place-items-center rounded-2xl font-bold ${dims}`}
       style={{
-        background: `linear-gradient(135deg, hsl(${company.hue} 60% 55%), hsl(${company.hue + 30} 60% 45%))`,
+        background: `linear-gradient(135deg, hsl(${hue} 60% 55%), hsl(${hue + 30} 60% 45%))`,
         color: "white",
       }}
       aria-hidden="true"
     >
-      {company.name.charAt(0)}
+      {company.logo || company.name.charAt(0)}
+    </span>
+  );
+}
+
+export function WorkerAvatar({
+  worker,
+  size = "md",
+}: {
+  worker: { name: string; avatar: string };
+  size?: "sm" | "md" | "lg";
+}) {
+  const dims =
+    size === "lg"
+      ? "h-16 w-16 text-3xl"
+      : size === "sm"
+        ? "h-9 w-9 text-base"
+        : "h-12 w-12 text-xl";
+  return (
+    <span
+      className={`grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-indigo/20 to-violet/20 ${dims}`}
+      aria-hidden="true"
+    >
+      {worker.avatar}
     </span>
   );
 }
