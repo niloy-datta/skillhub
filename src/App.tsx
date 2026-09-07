@@ -26,7 +26,7 @@ export default function App() {
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("All");
   const [modes, setModes] = useState<Set<string>>(new Set());
-  const [salaryFloor, setSalaryFloor] = useState(30);
+  const [salaryFloor, setSalaryFloor] = useState(5000);
   const [savedOnly, setSavedOnly] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [activeJob, setActiveJob] = useState<Job | null>(null);
@@ -41,13 +41,17 @@ export default function App() {
   };
 
   const handleChip = (chip: string) => {
-    if (chip === "Remote") {
-      setModes(new Set(["Remote"]));
+    if (chip === "Part-time") {
       setCategory("All");
-    } else if (chip === "€100k+") {
-      setSalaryFloor(100);
-    } else {
+      setModes(new Set());
+    } else if (chip === "Entry Level") {
+      setCategory("All");
+      setModes(new Set());
+    } else if (["Warehouse", "Delivery", "Manufacturing", "Cleaning", "Construction", "Packaging"].includes(chip)) {
       setCategory(chip);
+      setModes(new Set());
+    } else {
+      setCategory("All");
       setModes(new Set());
     }
     setSavedOnly(false);

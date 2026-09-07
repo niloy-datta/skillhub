@@ -83,7 +83,7 @@ export function JobModal({
             {/* Tags */}
             <div className="flex flex-wrap gap-2">
               <span className="rounded-full bg-gradient-to-r from-indigo to-violet px-4 py-2 font-mono text-sm font-bold text-white">
-                €{job.salaryMin}–{job.salaryMax}k gross/yr
+                ৳{job.salaryMin.toLocaleString()}–{job.salaryMax.toLocaleString()} gross/month
               </span>
               {[job.category, job.level, job.type, job.mode, ...job.tags].map((t) => (
                 <span
@@ -171,7 +171,7 @@ export function JobModal({
               {saved ? "Saved" : "Save"}
             </button>
             <p className="ml-auto font-mono text-xs text-midnight/50">
-              Avg. first response 48h
+              Most employers reply within 24h
             </p>
           </div>
         </article>

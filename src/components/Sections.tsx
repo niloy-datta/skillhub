@@ -23,13 +23,13 @@ export function CompanySpotlight({ onBrowse }: { onBrowse: (name: string) => voi
         <Reveal>
           <div className="mb-12">
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-indigo">
-              // Company Spotlight
+              // Trusted Employers
             </p>
             <h2 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">
               Hiring right now
             </h2>
             <p className="mt-3 text-lg text-white/60">
-              {COMPANIES.length} vetted companies with open roles
+              {COMPANIES.length} verified employers with open positions
             </p>
           </div>
         </Reveal>
@@ -85,11 +85,11 @@ export function CompanySpotlight({ onBrowse }: { onBrowse: (name: string) => voi
 
 /* ---------- Salary Explorer ---------- */
 const SALARY_DATA = [
-  { role: "Frontend Engineer", min: 70, max: 120, avg: 95 },
-  { role: "Product Designer", min: 65, max: 110, avg: 88 },
-  { role: "Data Scientist", min: 80, max: 140, avg: 110 },
-  { role: "Product Manager", min: 90, max: 150, avg: 120 },
-  { role: "DevOps Engineer", min: 75, max: 130, avg: 102 },
+  { role: "Warehouse Worker", min: 10000, max: 18000, avg: 14000 },
+  { role: "Delivery Rider", min: 15000, max: 28000, avg: 21000 },
+  { role: "Factory Worker", min: 9000, max: 16000, avg: 12500 },
+  { role: "Cleaner", min: 8000, max: 15000, avg: 11000 },
+  { role: "Construction Worker", min: 12000, max: 22000, avg: 17000 },
 ];
 
 export function SalaryExplorer() {
@@ -100,13 +100,13 @@ export function SalaryExplorer() {
         <Reveal>
           <div className="mb-12 text-center">
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-indigo">
-              // Comp Intel
+              // Salary Guide
             </p>
             <h2 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">
-              Salary explorer
+              What you can earn
             </h2>
             <p className="mt-3 text-lg text-midnight/60">
-              Real salary bands from live listings — no guessing
+              Real monthly salaries from actual job listings — no guessing
             </p>
           </div>
         </Reveal>
@@ -119,28 +119,28 @@ export function SalaryExplorer() {
                   <div className="mb-3 flex items-baseline justify-between">
                     <p className="font-display text-lg font-bold">{item.role}</p>
                     <p className="font-mono text-sm text-midnight/60">
-                      €{item.min}k – €{item.max}k
+                      ৳{item.min.toLocaleString()} – ৳{item.max.toLocaleString()}
                     </p>
                   </div>
                   <div className="relative h-3 overflow-hidden rounded-full bg-mist">
                     <div
                       className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-indigo via-violet to-amber transition-all duration-1000"
-                      style={{ width: `${(item.max / 160) * 100}%` }}
+                      style={{ width: `${(item.max / 30000) * 100}%` }}
                     />
                     <div
                       className="absolute inset-y-0 rounded-full bg-white/30 transition-all duration-1000"
                       style={{
-                        left: `${(item.min / 160) * 100}%`,
-                        width: `${((item.max - item.min) / 160) * 100}%`,
+                        left: `${(item.min / 30000) * 100}%`,
+                        width: `${((item.max - item.min) / 30000) * 100}%`,
                       }}
                     />
                     <div
                       className="absolute top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-midnight shadow-lg transition-all duration-1000"
-                      style={{ left: `${(item.avg / 160) * 100}%` }}
+                      style={{ left: `${(item.avg / 30000) * 100}%` }}
                     />
                   </div>
                   <p className="mt-2 font-mono text-xs text-midnight/50">
-                    Avg: €{item.avg}k
+                    Avg: ৳{item.avg.toLocaleString()}/month
                   </p>
                 </div>
               ))}
@@ -156,18 +156,18 @@ export function SalaryExplorer() {
 const STEPS = [
   {
     num: "01",
-    title: "Every role vetted",
-    desc: "We verify every listing with the hiring team. No ghost jobs. No stale postings. Only live, real roles.",
+    title: "Real jobs, real pay",
+    desc: "Every job is verified with the employer. No fake listings, no agents asking for money. Only genuine local work.",
   },
   {
     num: "02",
-    title: "Salary bands on every listing",
-    desc: "Every role shows the real salary range. No more salary roulette. Know what you're worth before you apply.",
+    title: "Salary shown upfront",
+    desc: "Every job shows the exact monthly salary range. Know what you'll earn before you apply. No surprises.",
   },
   {
     num: "03",
-    title: "Live feed, updated hourly",
-    desc: "New roles stream in every hour. The wire never sleeps. Be first to apply to the best opportunities.",
+    title: "Quick hiring",
+    desc: "Apply today, start working this week. Most employers respond within 24 hours. No long waiting periods.",
   },
 ];
 
@@ -179,13 +179,13 @@ export function HowItWorks() {
         <Reveal>
           <div className="mb-16 text-center">
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-indigo">
-              // The Method
+              // Simple & Honest
             </p>
             <h2 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">
               How it works
             </h2>
             <p className="mt-3 text-lg text-white/60">
-              Three simple principles. Zero fluff.
+              No agents. No fees. Just real jobs and real pay.
             </p>
           </div>
         </Reveal>
@@ -211,12 +211,12 @@ export function HowItWorks() {
 
         <Reveal delay={450}>
           <div className="mt-16 rounded-3xl bg-gradient-to-r from-indigo via-violet to-amber p-12 text-center shadow-glow">
-            <h3 className="font-display text-3xl font-black">Ready to hire?</h3>
+            <h3 className="font-display text-3xl font-black">Need workers?</h3>
             <p className="mt-3 text-lg text-white/90">
-              Post your role on the wire. Reach 50k+ qualified candidates.
+              Post your job for free. Reach local workers ready to start immediately.
             </p>
             <button className="mt-8 rounded-full bg-white px-8 py-4 font-semibold text-midnight shadow-premium transition-all hover:scale-105">
-              Post a role →
+              Post a job →
             </button>
           </div>
         </Reveal>
@@ -228,19 +228,19 @@ export function HowItWorks() {
 /* ---------- Testimonials ---------- */
 const TESTIMONIALS = [
   {
-    quote: "Workwire is the only job board I trust. Every listing is real, every salary is transparent. I landed my dream role in 3 weeks.",
-    author: "Sarah Chen",
-    role: "Senior Product Designer at Stripe",
+    quote: "I found a warehouse job in Gazipur within 2 days. The salary was exactly what they showed. No surprises, no delays. Started working the next week!",
+    author: "Rahim Uddin",
+    role: "Warehouse Loader at Mega Warehouse Co.",
   },
   {
-    quote: "The quality of candidates we get from Workwire is unmatched. They're pre-qualified, motivated, and ready to interview.",
-    author: "Marcus Johnson",
-    role: "Head of Engineering at Linear",
+    quote: "As a delivery rider, I needed flexible hours and quick pay. Swift Delivery hired me same day through this site. Best decision I made.",
+    author: "Kamal Hossain",
+    role: "Delivery Rider at Swift Delivery",
   },
   {
-    quote: "I've tried every job board. Workwire is the only one that actually delivers. The salary transparency alone is worth it.",
-    author: "Elena Rodriguez",
-    role: "Data Scientist at Notion",
+    quote: "We needed 20 workers fast for our packaging line. Got applications within hours. These workers are reliable and hardworking.",
+    author: "Fatema Begum",
+    role: "HR Manager at FreshPack Foods",
   },
 ];
 
@@ -252,10 +252,10 @@ export function Testimonials() {
         <Reveal>
           <div className="mb-12 text-center">
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-indigo">
-              // Signed off the wire
+              // Real Stories
             </p>
             <h2 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">
-              What people are saying
+              Workers & employers say
             </h2>
           </div>
         </Reveal>
@@ -300,10 +300,10 @@ export function AlertBand() {
       <div className="relative mx-auto max-w-4xl px-5 text-center md:px-8">
         <Reveal>
           <h2 className="font-display text-4xl font-black tracking-tight md:text-5xl">
-            Get the Friday digest
+            Get new jobs in your area
           </h2>
           <p className="mt-4 text-lg text-white/90">
-            The best new roles, delivered every Friday. No spam. Unsubscribe anytime.
+            Get notified when new jobs are posted near you. Free alerts via SMS or email.
           </p>
         </Reveal>
 
@@ -311,7 +311,7 @@ export function AlertBand() {
           {submitted ? (
             <div className="mt-10 inline-flex items-center gap-3 rounded-full bg-white/20 px-8 py-4 backdrop-blur-sm">
               <IconCheck className="h-6 w-6" />
-              <span className="font-semibold">You're on the list. See you Friday.</span>
+              <span className="font-semibold">You're on the list! We'll text you when new jobs appear.</span>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="mt-10 flex flex-col gap-3 sm:flex-row">
@@ -319,7 +319,7 @@ export function AlertBand() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder="Your phone number or email"
                 required
                 className="flex-1 rounded-full border border-white/30 bg-white/10 px-6 py-4 text-base text-white backdrop-blur-sm outline-none placeholder:text-white/50 focus:border-white"
               />
@@ -327,7 +327,7 @@ export function AlertBand() {
                 type="submit"
                 className="rounded-full bg-white px-8 py-4 font-semibold text-midnight shadow-premium transition-all hover:scale-105"
               >
-                Subscribe
+                Get Alerts
               </button>
             </form>
           )}

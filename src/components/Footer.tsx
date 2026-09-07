@@ -2,29 +2,29 @@ import { LogoMark } from "./Icons";
 
 const COLUMNS: { heading: string; links: [string, string][] }[] = [
   {
-    heading: "Job seekers",
+    heading: "For Workers",
     links: [
-      ["Browse the board", "#jobs"],
-      ["Salary explorer", "#salaries"],
+      ["Find jobs", "#jobs"],
+      ["Salary guide", "#salaries"],
       ["Job alerts", "#alerts"],
-      ["Companies", "#companies"],
+      ["Top employers", "#companies"],
     ],
   },
   {
-    heading: "Employers",
+    heading: "For Employers",
     links: [
-      ["Post a role", "#how"],
-      ["The method", "#how"],
-      ["Talent search", "#companies"],
+      ["Post a job", "#how"],
+      ["How it works", "#how"],
+      ["Find workers", "#companies"],
       ["Success stories", "#stories"],
     ],
   },
   {
-    heading: "The wire",
+    heading: "About",
     links: [
       ["How it works", "#how"],
-      ["Signed offers", "#stories"],
-      ["Join the digest", "#alerts"],
+      ["Worker stories", "#stories"],
+      ["Get job alerts", "#alerts"],
       ["Back to top", "#top"],
     ],
   },
@@ -46,12 +46,12 @@ export function Footer() {
               </span>
             </a>
             <p className="mt-6 max-w-xs text-base leading-relaxed text-white/60">
-              The live wire for open roles. Every listing vetted, banded and
-              streamed — so good work finds you back.
+              Find real local jobs with real pay. Warehouse, delivery, factory,
+              cleaning and more — all verified, all paying.
             </p>
             <p className="mt-8 flex items-center gap-2.5 font-mono text-sm text-emerald">
               <span className="pulse-dot inline-block h-2 w-2 rounded-full bg-emerald" />
-              All systems hiring
+              205+ jobs available now
             </p>
           </div>
 
@@ -74,12 +74,12 @@ export function Footer() {
         </div>
 
         <div className="mt-16 flex flex-col justify-between gap-4 border-t border-white/10 pt-8 font-mono text-sm text-white/40 md:flex-row">
-          <p>© 2026 Workwire B.V. — Made on the wire.</p>
-          <p className="tracking-[0.18em]">AMS · BER · LIS · NYC · REMOTE</p>
+          <p>© 2026 LocalJobs BD — Connecting workers with employers.</p>
+          <p className="tracking-[0.18em]">DHAKA · GAZIPUR · SAVAR · NARAYANGANJ · MIRPUR</p>
           <div className="flex gap-6">
             <a href="#top" className="transition-colors hover:text-indigo">Privacy</a>
             <a href="#top" className="transition-colors hover:text-indigo">Terms</a>
-            <a href="#alerts" className="transition-colors hover:text-indigo">Status</a>
+            <a href="#alerts" className="transition-colors hover:text-indigo">Help</a>
           </div>
         </div>
       </div>

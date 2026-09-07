@@ -13,10 +13,9 @@ import {
   IconX,
 } from "./Icons";
 
-const CATEGORIES = ["All", "Engineering", "Design", "Data", "Product", "Marketing", "Sales"];
-const MODES = ["Remote", "Hybrid", "On-site"];
+const CATEGORIES = ["All", "Warehouse", "Manufacturing", "Delivery", "Cleaning", "Construction", "Packaging"];
 const TYPES = ["Full-time", "Part-time", "Contract"];
-const LEVELS = ["Junior", "Mid", "Senior", "Lead"];
+const LEVELS = ["Entry", "Experienced", "Supervisor"];
 
 function JobCard({
   job,
@@ -88,8 +87,8 @@ function JobCard({
 
         <div className="mt-6 flex items-center justify-between border-t border-midnight/10 pt-5">
           <p className="font-display text-lg font-bold">
-            €{job.salaryMin}–{job.salaryMax}k
-            <span className="ml-1 text-xs font-medium text-midnight/50">/yr</span>
+            ৳{job.salaryMin.toLocaleString()}–{job.salaryMax.toLocaleString()}
+            <span className="ml-1 text-xs font-medium text-midnight/50">/month</span>
           </p>
           <span className="flex items-center gap-1.5 font-mono text-xs font-semibold text-indigo opacity-0 transition-opacity group-hover:opacity-100">
             View role <IconArrow className="h-3.5 w-3.5" />
@@ -178,7 +177,7 @@ export function JobBoard({
     setLocation("");
     setCategory("All");
     setModes(new Set());
-    setSalaryFloor(30);
+    setSalaryFloor(5000);
     setSavedOnly(false);
     setPage(1);
   };
@@ -198,13 +197,13 @@ export function JobBoard({
           <div className="mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
             <div>
               <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-indigo">
-                // The Board
+                // Available Jobs
               </p>
               <h2 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">
-                {savedOnly ? "Saved roles" : "Live on the wire"}
+                {savedOnly ? "Saved jobs" : "Jobs near you"}
               </h2>
               <p className="mt-3 text-lg text-midnight/60">
-                {filtered.length} open role{filtered.length !== 1 ? "s" : ""} · updated 60s ago
+                {filtered.length} open job{filtered.length !== 1 ? "s" : ""} · updated today
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -307,34 +306,13 @@ export function JobBoard({
 
                 <div>
                   <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-midnight/60">
-                    Mode
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {MODES.map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => toggleMode(mode)}
-                        className={`rounded-full border px-4 py-2 font-mono text-sm font-medium transition-all ${
-                          modes.has(mode)
-                            ? "border-indigo bg-indigo text-white"
-                            : "border-midnight/20 text-midnight/70 hover:border-midnight"
-                        }`}
-                      >
-                        {mode}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-midnight/60">
-                    Minimum salary: €{salaryFloor}k+
+                    Minimum salary: ৳{salaryFloor.toLocaleString()}+
                   </p>
                   <input
                     type="range"
-                    min={30}
-                    max={150}
-                    step={10}
+                    min={5000}
+                    max={40000}
+                    step={1000}
                     value={salaryFloor}
                     onChange={(e) => {
                       setSalaryFloor(Number(e.target.value));
@@ -379,7 +357,7 @@ export function JobBoard({
                   onClick={() => setPage((p) => p + 1)}
                   className="inline-flex items-center gap-2 rounded-full border border-midnight/20 px-8 py-3 font-semibold text-midnight transition-all hover:border-indigo hover:bg-indigo/5 hover:text-indigo"
                 >
-                  Load more roles
+                  Load more jobs
                   <IconChevron className="h-4 w-4" />
                 </button>
               </div>
@@ -387,7 +365,7 @@ export function JobBoard({
           </>
         ) : (
           <div className="rounded-2xl border border-midnight/10 bg-white p-16 text-center shadow-sm">
-            <p className="font-display text-2xl font-bold text-midnight/80">No roles found</p>
+            <p className="font-display text-2xl font-bold text-midnight/80">No jobs found</p>
             <p className="mt-3 text-midnight/60">Try adjusting your filters or search terms</p>
             <button
               onClick={clearFilters}

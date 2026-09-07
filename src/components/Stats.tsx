@@ -10,10 +10,10 @@ interface StatDef {
 }
 
 const STATS: StatDef[] = [
-  { value: 2847, suffix: "", label: "live roles on the wire", note: "right now", gradient: "from-indigo to-violet" },
-  { value: 612, suffix: "", label: "companies hiring", note: "vetted & paying", gradient: "from-violet to-amber" },
-  { value: 48, suffix: "h", label: "median first response", note: "last 90 days", gradient: "from-amber to-emerald" },
-  { value: 92, suffix: "%", label: "listings with salary bands", note: "and climbing", gradient: "from-emerald to-indigo" },
+  { value: 205, suffix: "+", label: "local jobs available", note: "right now", gradient: "from-indigo to-violet" },
+  { value: 8, suffix: "", label: "trusted employers", note: "verified & paying", gradient: "from-violet to-amber" },
+  { value: 24, suffix: "h", label: "fastest hiring time", note: "apply today, start tomorrow", gradient: "from-amber to-emerald" },
+  { value: 100, suffix: "%", label: "jobs with salary shown", note: "no hidden pay", gradient: "from-emerald to-indigo" },
 ];
 
 function Stat({ value, suffix, label, note, gradient }: StatDef) {

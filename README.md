@@ -1,38 +1,53 @@
-# Workwire — The Live Job Wire
+# LocalJobs BD — Find Real Local Jobs
 
-A premium, cinematic job portal built with React, TypeScript, and Tailwind CSS. Features a killer dark-mode aesthetic with glassmorphic elements, animated gradients, and a sophisticated editorial design.
+A modern, professional job portal for local blue-collar and non-corporate jobs. Built with React, TypeScript, and Tailwind CSS. Features warehouse work, delivery, factory, cleaning, construction, and packaging jobs with real salary information.
 
 ## ✨ Features
 
 ### Premium Design
-- **Cinematic hero** with AI-generated background imagery and gradient overlays
+- **Modern dark hero** with gradient overlays and animated elements
 - **Glassmorphic UI** with backdrop blur and subtle transparency
 - **Animated gradients** (indigo → violet → amber) throughout
-- **Sophisticated typography** with Inter font family
-- **Premium shadows** and hover effects
-- **Smooth scroll reveals** and micro-interactions
+- **Professional typography** with Inter font family
+- **Premium shadows** and smooth hover effects
+- **Scroll reveals** and micro-interactions
 
 ### Core Functionality
-- **Live job board** with 22 realistic listings
-- **Advanced filtering**: category, mode, salary range, location
-- **Real-time search** across roles, companies, and skills
+- **Live job board** with 22 realistic local job listings
+- **Advanced filtering**: category, type, salary range, location
+- **Real-time search** across job titles, companies, and skills
 - **Sort by newest or salary**
-- **Save/bookmark roles** with persistent state
-- **Job detail modal** with full brief and apply flow
-- **Company spotlight** with follow functionality
-- **Interactive salary explorer** with visual range bars
-- **Email digest signup** with validation
+- **Save/bookmark jobs** with persistent state
+- **Job detail modal** with full description and apply flow
+- **Employer spotlight** with follow functionality
+- **Interactive salary guide** with visual range bars
+- **Job alert signup** with validation
+
+### Job Categories
+- 📦 Warehouse (Loader, Supervisor, Forklift Operator)
+- 🏭 Manufacturing (Machine Operator, Factory Worker)
+- 🚚 Delivery (Rider, Driver, Helper)
+- 🧹 Cleaning (Office Cleaner, Deep Cleaning Specialist)
+- 🏗️ Construction (Helper, Mason, Safety Officer)
+- 📮 Packaging (Food Packer, Carton Box Maker)
 
 ### Sections
-1. **Hero** — Cinematic opener with rotating featured jobs stack
+1. **Hero** — Modern opener with rotating featured jobs stack
 2. **Stats** — Animated count-up metrics with gradient cards
 3. **Job Board** — Full-featured search and filter engine
-4. **Company Spotlight** — Horizontal scroll of vetted companies
-5. **Salary Explorer** — Visual comp-intel dashboard
-6. **How It Works** — Three-step method explanation
-7. **Testimonials** — Social proof cards
-8. **Alert Band** — Friday digest email signup
+4. **Employer Spotlight** — Horizontal scroll of verified employers
+5. **Salary Guide** — Visual salary information dashboard
+6. **How It Works** — Simple 3-step explanation
+7. **Testimonials** — Real worker and employer stories
+8. **Job Alerts** — SMS/email signup for new jobs
 9. **Footer** — Comprehensive navigation
+
+## 💰 Salary Information
+
+All salaries shown in Bangladeshi Taka (৳) per month:
+- Entry level: ৳8,000–৳15,000
+- Experienced: ৳15,000–৳25,000
+- Supervisor: ৳25,000–৳38,000
 
 ## 🎨 Design System
 
@@ -85,35 +100,38 @@ npm run build
 - **Save**: Click bookmark icon on any job card
 - **View details**: Click any job card to open the modal
 - **Apply**: Click "Apply now" in the job modal
-- **Follow companies**: Click "Follow" on company cards
-- **Subscribe**: Enter email in the Friday digest section
+- **Follow employers**: Click "Follow" on employer cards
+- **Get alerts**: Enter phone/email in the alerts section
 
-## 🌟 Premium Touches
+## 🌟 Features for Workers
 
-- AI-generated hero imagery
-- Noise texture overlay for depth
-- Gradient mesh backgrounds
-- Glassmorphic navigation
-- Animated count-up statistics
-- Text scramble effect on headlines
-- Rotating job card stack
-- Smooth scroll navigation
-- Reduced motion support
-- Responsive design (mobile-first)
+- Real salary shown upfront (no hidden pay)
+- Verified employers only
+- Quick hiring (apply today, start this week)
+- Local jobs near you
+- No agent fees
+- Multiple job types (full-time, part-time, contract)
+
+## 🌟 Features for Employers
+
+- Free job posting
+- Reach local workers immediately
+- Verified applicant pool
+- Quick response times
+- Simple application process
 
 ## 📱 Responsive
 
 Fully responsive across all breakpoints:
 - Mobile: Single column, stacked layouts
 - Tablet: Two-column grids
-- Desktop: Full multi-column layouts with sidebar elements
+- Desktop: Full multi-column layouts
 
 ## 🎭 Animations
 
 All animations respect `prefers-reduced-motion`:
 - Scroll reveals with staggered delays
 - Count-up number animations
-- Text scramble decode effect
 - Card entrance animations
 - Hover scale and glow effects
 - Marquee ticker
@@ -121,4 +139,4 @@ All animations respect `prefers-reduced-motion`:
 
 ---
 
-Built with ❤️ on the wire.
+Built with ❤️ for local workers and employers in Bangladesh.

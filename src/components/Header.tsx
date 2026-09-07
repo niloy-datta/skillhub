@@ -25,19 +25,19 @@ export function Header({
             href="#jobs"
             className="font-medium text-sm text-white/70 transition-colors hover:text-white"
           >
-            Browse
+            Find Jobs
           </a>
           <a
             href="#companies"
             className="font-medium text-sm text-white/70 transition-colors hover:text-white"
           >
-            Companies
+            Employers
           </a>
           <a
             href="#salaries"
             className="font-medium text-sm text-white/70 transition-colors hover:text-white"
           >
-            Salaries
+            Salary Guide
           </a>
           <a
             href="#how"
@@ -64,7 +64,7 @@ export function Header({
             href="#jobs"
             className="rounded-full bg-gradient-to-r from-indigo to-violet px-5 py-2 text-sm font-semibold text-white shadow-glow transition-all hover:scale-105 hover:shadow-[0_0_60px_rgba(99,102,241,0.5)]"
           >
-            Post a role
+            Post a job
           </a>
         </div>
       </div>
