@@ -4,12 +4,12 @@ import { usePrefersReducedMotion, useScramble } from "../hooks";
 import { CompanyMark, IconArrow, IconPin, IconSearch, LogoMark } from "./Icons";
 import { COMPANIES } from "../data";
 
-const CHIPS = ["Remote only", "€80k+", "Engineering", "Design", "Data", "Product"];
+const CHIPS = ["Remote", "€100k+", "Engineering", "Design", "Data", "Product"];
 
 const SLOT_STYLES = [
-  "z-30 rotate-[-1.2deg]",
-  "z-20 translate-x-5 translate-y-7 rotate-[2.4deg] scale-[0.965] opacity-80",
-  "z-10 -translate-x-5 translate-y-14 rotate-[-4.5deg] scale-[0.93] opacity-55",
+  "z-30 rotate-[-1deg]",
+  "z-20 translate-x-6 translate-y-8 rotate-[2.5deg] scale-[0.96] opacity-85",
+  "z-10 -translate-x-6 translate-y-16 rotate-[-5deg] scale-[0.92] opacity-50",
 ];
 
 export function Hero({
@@ -32,7 +32,7 @@ export function Hero({
     if (reduced || featured.length < 2) return;
     const id = window.setInterval(
       () => setIdx((i) => (i + 1) % featured.length),
-      3800
+      4200
     );
     return () => window.clearInterval(id);
   }, [reduced, featured.length]);
@@ -46,83 +46,89 @@ export function Hero({
   };
 
   return (
-    <section className="relative overflow-hidden bg-ink text-paper">
-      <div className="bg-hero-grid absolute inset-0" aria-hidden="true" />
-      <div
-        className="pointer-events-none absolute -right-28 top-10 hidden text-paper/[0.05] md:block"
-        aria-hidden="true"
-      >
-        <LogoMark className="spin-slow h-[430px] w-[430px]" />
+    <section className="relative min-h-screen overflow-hidden bg-midnight text-white">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0">
+        <img
+          src="https://image.qwenlm.ai/generated-images/f9b50c79-1e02-46da-9781-e6ecfbe959fa/_result.png"
+          alt=""
+          className="h-full w-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-midnight/60 via-midnight/80 to-midnight" />
+        <div className="bg-hero-grid absolute inset-0" />
       </div>
-      <p
-        className="absolute bottom-24 left-8 hidden font-mono text-[10px] uppercase tracking-[0.22em] text-paper/30 xl:block"
+
+      {/* Decorative elements */}
+      <div
+        className="pointer-events-none absolute -right-32 top-20 hidden text-white/[0.04] md:block"
         aria-hidden="true"
       >
-        52.37°N 4.89°E — AMS wire node
-      </p>
+        <LogoMark className="spin-slow h-[500px] w-[500px]" />
+      </div>
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-5 pb-20 pt-32 md:px-8 md:pt-40 lg:grid-cols-[1.1fr_0.9fr]">
-        {/* ---- left: headline + search ---- */}
+      <div className="relative mx-auto grid max-w-7xl items-center gap-20 px-5 pb-24 pt-40 md:px-8 md:pt-48 lg:grid-cols-[1.15fr_0.85fr]">
+        {/* Left: headline + search */}
         <div>
-          <p className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-paper/70">
-            <span className="pulse-dot inline-block h-2 w-2 rounded-full bg-lime" />
-            Live — 2,847 open roles · updated 60s ago
-          </p>
+          <div className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/5 px-4 py-2 backdrop-blur-sm">
+            <span className="pulse-dot inline-block h-2 w-2 rounded-full bg-emerald" />
+            <span className="font-mono text-xs font-medium text-white/80">
+              2,847 live roles · updated 60s ago
+            </span>
+          </div>
 
-          <h1 className="mt-6 font-display text-[clamp(2.6rem,8vw,6rem)] font-extrabold leading-[0.95] tracking-[-0.02em]">
-            <span className="block whitespace-nowrap">{line1}</span>
-            <span className="block whitespace-nowrap text-lime">{line2}</span>
+          <h1 className="mt-8 font-display text-[clamp(3rem,9vw,7rem)] font-black leading-[0.9] tracking-tight">
+            <span className="block">{line1}</span>
+            <span className="block gradient-text">{line2}</span>
           </h1>
 
-          <p className="mt-7 max-w-xl text-lg leading-relaxed text-paper/70">
+          <p className="mt-8 max-w-xl text-lg leading-relaxed text-white/70 md:text-xl">
             Workwire streams every open role from 600+ vetted companies onto one
             live feed — with real salary bands on every listing. No ghost jobs.
             No salary roulette. Just the wire.
           </p>
 
+          {/* Search form */}
           <form
             onSubmit={submit}
-            className="mt-10 flex flex-col gap-2.5 border border-ink/10 bg-card p-2.5 text-ink shadow-[8px_8px_0_0_rgba(201,241,88,0.22)] md:flex-row"
+            className="mt-10 flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl md:flex-row"
           >
-            <label className="flex flex-1 items-center gap-3 px-3">
-              <IconSearch className="h-4 w-4 shrink-0 text-ink/40" />
+            <label className="flex flex-1 items-center gap-3 rounded-xl bg-white/5 px-4">
+              <IconSearch className="h-5 w-5 shrink-0 text-white/40" />
               <span className="sr-only">Role, company or skill</span>
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Role, company or skill…"
-                className="w-full min-w-0 bg-transparent py-3 text-base outline-none placeholder:text-ink/40"
+                className="w-full min-w-0 bg-transparent py-4 text-base text-white outline-none placeholder:text-white/40"
               />
             </label>
-            <div className="hidden w-px bg-ink/10 md:block" />
-            <label className="flex items-center gap-3 border-t border-ink/10 px-3 md:w-52 md:border-t-0">
-              <IconPin className="h-4 w-4 shrink-0 text-ink/40" />
+            <label className="flex items-center gap-3 rounded-xl bg-white/5 px-4 md:w-56">
+              <IconPin className="h-5 w-5 shrink-0 text-white/40" />
               <span className="sr-only">City or remote</span>
               <input
                 value={loc}
                 onChange={(e) => setLoc(e.target.value)}
-                placeholder="City or “Remote”"
-                className="w-full min-w-0 bg-transparent py-3 text-base outline-none placeholder:text-ink/40"
+                placeholder="City or Remote"
+                className="w-full min-w-0 bg-transparent py-4 text-base text-white outline-none placeholder:text-white/40"
               />
             </label>
             <button
               type="submit"
-              className="group flex items-center justify-center gap-2 bg-cobalt px-6 py-3 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-paper transition-colors hover:bg-cobalt-dark"
+              className="group flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo to-violet px-8 py-4 font-semibold text-white shadow-glow transition-all hover:scale-105 hover:shadow-[0_0_80px_rgba(99,102,241,0.6)]"
             >
-              Search the wire
-              <IconArrow className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              Search
+              <IconArrow className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </button>
           </form>
 
+          {/* Hot chips */}
           <div className="mt-6 flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper/40">
-              Hot right now:
-            </span>
+            <span className="font-mono text-xs text-white/40">Hot:</span>
             {CHIPS.map((chip) => (
               <button
                 key={chip}
                 onClick={() => onChip(chip)}
-                className="border border-paper/25 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-paper/80 transition-all hover:border-lime hover:bg-lime hover:text-ink active:scale-95"
+                className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 backdrop-blur-sm transition-all hover:border-indigo hover:bg-indigo/20 hover:text-white"
               >
                 {chip}
               </button>
@@ -130,9 +136,9 @@ export function Hero({
           </div>
         </div>
 
-        {/* ---- right: rotating featured stack ---- */}
+        {/* Right: rotating featured stack */}
         <div className="hidden lg:block">
-          <div className="relative h-[430px] select-none">
+          <div className="relative h-[480px] select-none">
             {featured.map((job, i) => {
               const slot = (i - idx + featured.length) % featured.length;
               const isFront = slot === 0;
@@ -145,49 +151,51 @@ export function Hero({
                   <article
                     key={`${job.id}-${slot}`}
                     onClick={() => isFront && onOpen(job)}
-                    className={`border border-ink/10 bg-card p-6 text-ink ${
+                    className={`rounded-2xl border border-white/10 bg-white/10 p-7 backdrop-blur-xl ${
                       isFront
-                        ? "card-in cursor-pointer shadow-[14px_16px_0_0_rgba(11,18,13,0.55)]"
-                        : "pointer-events-none shadow-[10px_12px_0_0_rgba(11,18,13,0.4)]"
+                        ? "card-in cursor-pointer shadow-premium"
+                        : "pointer-events-none"
                     }`}
                   >
-                    <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.18em]">
-                      <span className="flex items-center gap-2 font-semibold text-cobalt">
-                        <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-tang" />
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 font-mono text-xs font-semibold text-emerald">
+                        <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-emerald" />
                         Just in — {formatAgo(job.postedHours)}
                       </span>
-                      <span className="text-ink/45">{job.category}</span>
+                      <span className="font-mono text-xs text-white/50">
+                        {job.category}
+                      </span>
                     </div>
-                    <div className="mt-4 flex items-start gap-4">
+                    <div className="mt-5 flex items-start gap-4">
                       {company && <CompanyMark company={company} />}
                       <div>
                         <h3 className="font-display text-2xl font-bold leading-tight">
                           {job.title}
                         </h3>
-                        <p className="mt-1 font-mono text-xs text-ink/55">
-                          {job.company} · {job.location} · {job.mode}
+                        <p className="mt-1 font-mono text-sm text-white/60">
+                          {job.company} · {job.location}
                         </p>
                       </div>
                     </div>
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {job.tags.map((t) => (
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {job.tags.slice(0, 3).map((t) => (
                         <span
                           key={t}
-                          className="border border-ink/15 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-ink/60"
+                          className="rounded-full border border-white/20 bg-white/5 px-3 py-1 font-mono text-xs text-white/70"
                         >
                           {t}
                         </span>
                       ))}
                     </div>
                     <div className="mt-6 flex items-center justify-between">
-                      <p className="font-mono text-lg font-bold">
+                      <p className="font-display text-2xl font-bold">
                         €{job.salaryMin}–{job.salaryMax}k
-                        <span className="ml-1 text-[10px] font-medium uppercase text-ink/45">
-                          / yr
+                        <span className="ml-1 text-xs font-medium text-white/50">
+                          /yr
                         </span>
                       </p>
-                      <span className="border border-cobalt/40 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-cobalt">
-                        Open role ↗
+                      <span className="rounded-full bg-gradient-to-r from-indigo to-violet px-4 py-2 font-mono text-xs font-semibold text-white">
+                        View role →
                       </span>
                     </div>
                   </article>
@@ -195,35 +203,32 @@ export function Hero({
               );
             })}
           </div>
-          <div className="mt-6 flex justify-center gap-1.5">
+          <div className="mt-6 flex justify-center gap-2">
             {featured.map((job, i) => (
               <button
                 key={job.id}
                 onClick={() => setIdx(i)}
                 aria-label={`Show featured role ${i + 1}`}
-                className={`h-1 transition-all duration-500 ${
-                  i === idx ? "w-8 bg-lime" : "w-3 bg-paper/25 hover:bg-paper/50"
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  i === idx ? "w-10 bg-gradient-to-r from-indigo to-violet" : "w-4 bg-white/20 hover:bg-white/40"
                 }`}
               />
             ))}
           </div>
-          <p className="mt-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-paper/40">
-            // 3 of 41 featured today — curated 06:00 CET
-          </p>
         </div>
       </div>
 
-      {/* ---- ticker ---- */}
-      <div className="marquee relative border-t border-paper/15 py-4" aria-hidden="true">
+      {/* Ticker */}
+      <div className="marquee relative border-t border-white/10 py-5" aria-hidden="true">
         <div className="marquee-track">
           {[0, 1].map((dup) => (
             <div key={dup} className="flex shrink-0">
               {TICKER_ITEMS.map((item) => (
                 <span
                   key={`${dup}-${item}`}
-                  className="flex items-center font-mono text-[11px] uppercase tracking-[0.2em] text-paper/55"
+                  className="flex items-center font-mono text-sm text-white/50"
                 >
-                  <span className="mx-6 text-lime">◆</span>
+                  <span className="mx-8 text-indigo">◆</span>
                   {item}
                 </span>
               ))}

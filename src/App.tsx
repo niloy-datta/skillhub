@@ -41,11 +41,11 @@ export default function App() {
   };
 
   const handleChip = (chip: string) => {
-    if (chip === "Remote only") {
+    if (chip === "Remote") {
       setModes(new Set(["Remote"]));
       setCategory("All");
-    } else if (chip === "€80k+") {
-      setSalaryFloor(80);
+    } else if (chip === "€100k+") {
+      setSalaryFloor(100);
     } else {
       setCategory(chip);
       setModes(new Set());

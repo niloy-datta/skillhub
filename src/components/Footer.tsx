@@ -32,34 +32,39 @@ const COLUMNS: { heading: string; links: [string, string][] }[] = [
 
 export function Footer() {
   return (
-    <footer className="bg-deep text-paper">
-      <div className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+    <footer className="bg-midnight text-white">
+      <div className="mx-auto max-w-7xl px-5 py-20 md:px-8">
         <div className="grid gap-12 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
           <div>
-            <a href="#top" className="flex items-center gap-2.5">
-              <LogoMark className="h-6 w-6 text-lime" />
-              <span className="font-display text-lg font-bold tracking-tight">Workwire</span>
+            <a href="#top" className="flex items-center gap-3 group">
+              <div className="relative">
+                <LogoMark className="h-7 w-7 text-indigo transition-transform group-hover:scale-110" />
+                <div className="absolute inset-0 blur-lg bg-indigo/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <span className="font-display text-xl font-bold tracking-tight">
+                Workwire
+              </span>
             </a>
-            <p className="mt-5 max-w-xs text-sm leading-relaxed text-paper/55">
+            <p className="mt-6 max-w-xs text-base leading-relaxed text-white/60">
               The live wire for open roles. Every listing vetted, banded and
               streamed — so good work finds you back.
             </p>
-            <p className="mt-7 flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-lime">
-              <span className="pulse-dot inline-block h-2 w-2 rounded-full bg-lime" />
+            <p className="mt-8 flex items-center gap-2.5 font-mono text-sm text-emerald">
+              <span className="pulse-dot inline-block h-2 w-2 rounded-full bg-emerald" />
               All systems hiring
             </p>
           </div>
 
           {COLUMNS.map((col) => (
             <nav key={col.heading} aria-label={col.heading}>
-              <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/40">
+              <p className="mb-5 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
                 {col.heading}
               </p>
               {col.links.map(([label, href]) => (
                 <a
                   key={label}
                   href={href}
-                  className="block w-fit py-1.5 text-sm text-paper/70 transition-colors hover:text-lime"
+                  className="block w-fit py-2 text-base text-white/70 transition-colors hover:text-indigo"
                 >
                   {label}
                 </a>
@@ -68,13 +73,13 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col justify-between gap-3 border-t border-paper/10 pt-6 font-mono text-[11px] text-paper/40 md:flex-row">
+        <div className="mt-16 flex flex-col justify-between gap-4 border-t border-white/10 pt-8 font-mono text-sm text-white/40 md:flex-row">
           <p>© 2026 Workwire B.V. — Made on the wire.</p>
           <p className="tracking-[0.18em]">AMS · BER · LIS · NYC · REMOTE</p>
-          <div className="flex gap-5">
-            <a href="#top" className="transition-colors hover:text-lime">Privacy</a>
-            <a href="#top" className="transition-colors hover:text-lime">Terms</a>
-            <a href="#alerts" className="transition-colors hover:text-lime">Status</a>
+          <div className="flex gap-6">
+            <a href="#top" className="transition-colors hover:text-indigo">Privacy</a>
+            <a href="#top" className="transition-colors hover:text-indigo">Terms</a>
+            <a href="#alerts" className="transition-colors hover:text-indigo">Status</a>
           </div>
         </div>
       </div>

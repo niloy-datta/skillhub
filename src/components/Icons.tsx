@@ -20,7 +20,7 @@ export function LogoMark({ className = "h-6 w-6" }: IconProps) {
         <path d="M3.8 7.25l16.4 9.5" />
         <path d="M20.2 7.25 3.8 16.75" />
       </g>
-      <circle cx="12" cy="12" r="2.6" fill="var(--color-lime)" />
+      <circle cx="12" cy="12" r="2.6" fill="var(--color-indigo)" />
     </svg>
   );
 }
@@ -152,8 +152,8 @@ export function CompanyMark({
     <span
       className={`grid shrink-0 place-items-center font-display font-bold ${dims} ${SHAPES[company.shape]}`}
       style={{
-        backgroundColor: `hsl(${company.hue} 42% 20%)`,
-        color: `hsl(${company.hue} 85% 78%)`,
+        background: `linear-gradient(135deg, hsl(${company.hue} 60% 55%), hsl(${company.hue + 30} 60% 45%))`,
+        color: "white",
       }}
       aria-hidden="true"
     >
