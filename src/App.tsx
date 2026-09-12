@@ -49,7 +49,11 @@ type View =
   | "notifications"
   | "analytics"
   | "payments"
-  | "help-center";
+  | "help-center"
+  | "verification"
+  | "disputes"
+  | "referrals"
+  | "achievements";
 
 export default function App() {
   const [view, setView] = useState<View>("home");
@@ -121,6 +125,10 @@ export default function App() {
         {view === "analytics" && <Analytics navigate={navigate} />}
         {view === "payments" && <Payments navigate={navigate} showToast={showToast} />}
         {view === "help-center" && <HelpCenter navigate={navigate} />}
+        {view === "verification" && <Verification navigate={navigate} showToast={showToast} />}
+        {view === "disputes" && <Disputes navigate={navigate} showToast={showToast} />}
+        {view === "referrals" && <Referrals navigate={navigate} showToast={showToast} />}
+        {view === "achievements" && <Achievements navigate={navigate} />}
       </main>
       <Footer navigate={navigate} />
     </div>
@@ -2936,6 +2944,799 @@ function HelpCenter({ navigate }: { navigate: (v: View) => void }) {
               <button className="rounded-full border-2 border-white/30 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20">
                 📧 Email Support
               </button>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== VERIFICATION =====
+function Verification({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [step, setStep] = useState(1);
+  const [verificationData, setVerificationData] = useState({
+    idType: "",
+    idNumber: "",
+    phone: "",
+    address: "",
+    skills: [] as string[],
+    experience: "",
+    education: "",
+    references: "",
+  });
+
+  const verificationSteps = [
+    { num: 1, title: "Identity", icon: "🆔" },
+    { num: 2, title: "Contact", icon: "📱" },
+    { num: 3, title: "Skills", icon: "🛠️" },
+    { num: 4, title: "Review", icon: "✓" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-4xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Verification</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Get Verified</h1>
+            <p className="mt-3 text-lg text-midnight/60">Complete verification to unlock premium features and earn more</p>
+          </div>
+        </Reveal>
+
+        {/* Progress Steps */}
+        <Reveal delay={100}>
+          <div className="mb-8 flex items-center justify-between">
+            {verificationSteps.map((s, i) => (
+              <div key={s.num} className="flex flex-1 items-center">
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full text-xl transition-all ${
+                      step >= s.num
+                        ? "bg-gradient-to-br from-indigo to-violet text-white shadow-lg"
+                        : "bg-mist text-midnight/40"
+                    }`}
+                  >
+                    {step > s.num ? <IconCheck className="h-6 w-6" /> : s.icon}
+                  </div>
+                  <p className={`mt-2 font-mono text-xs ${step >= s.num ? "text-indigo font-semibold" : "text-midnight/40"}`}>
+                    {s.title}
+                  </p>
+                </div>
+                {i < verificationSteps.length - 1 && (
+                  <div className={`mx-2 h-1 flex-1 rounded-full ${step > s.num ? "bg-indigo" : "bg-mist"}`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal delay={150}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl md:p-10">
+            {step === 1 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="font-display text-2xl font-bold">Identity Verification</h2>
+                  <p className="mt-2 text-midnight/60">Upload your government-issued ID</p>
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    ID Type *
+                  </label>
+                  <select
+                    value={verificationData.idType}
+                    onChange={(e) => setVerificationData({ ...verificationData, idType: e.target.value })}
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  >
+                    <option value="">Select ID type</option>
+                    <option value="passport">Passport</option>
+                    <option value="national-id">National ID</option>
+                    <option value="drivers-license">Driver's License</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    ID Number *
+                  </label>
+                  <input
+                    type="text"
+                    value={verificationData.idNumber}
+                    onChange={(e) => setVerificationData({ ...verificationData, idNumber: e.target.value })}
+                    placeholder="Enter your ID number"
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Upload ID Photo *
+                  </label>
+                  <div className="rounded-2xl border-2 border-dashed border-midnight/20 bg-cream p-8 text-center">
+                    <p className="text-4xl">📷</p>
+                    <p className="mt-2 font-semibold">Click to upload or drag and drop</p>
+                    <p className="mt-1 font-mono text-xs text-midnight/40">PNG, JPG up to 5MB</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    if (verificationData.idType && verificationData.idNumber) {
+                      setStep(2);
+                    } else {
+                      showToast("Please fill all required fields", "error");
+                    }
+                  }}
+                  className="w-full rounded-2xl bg-gradient-to-r from-indigo to-violet py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+                >
+                  Continue →
+                </button>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="font-display text-2xl font-bold">Contact Verification</h2>
+                  <p className="mt-2 text-midnight/60">Verify your phone and address</p>
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    value={verificationData.phone}
+                    onChange={(e) => setVerificationData({ ...verificationData, phone: e.target.value })}
+                    placeholder="+1 (555) 000-0000"
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  />
+                  <button
+                    onClick={() => showToast("Verification code sent!", "success")}
+                    className="mt-2 font-mono text-sm text-indigo hover:underline"
+                  >
+                    Send verification code
+                  </button>
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Address *
+                  </label>
+                  <textarea
+                    value={verificationData.address}
+                    onChange={(e) => setVerificationData({ ...verificationData, address: e.target.value })}
+                    placeholder="Enter your full address"
+                    rows={3}
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo resize-none"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(1)}
+                    className="flex-1 rounded-2xl border-2 border-midnight/20 py-4 font-semibold text-midnight transition-all hover:bg-mist"
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (verificationData.phone && verificationData.address) {
+                        setStep(3);
+                      } else {
+                        showToast("Please fill all required fields", "error");
+                      }
+                    }}
+                    className="flex-1 rounded-2xl bg-gradient-to-r from-indigo to-violet py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+                  >
+                    Continue →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="font-display text-2xl font-bold">Skills & Experience</h2>
+                  <p className="mt-2 text-midnight/60">Tell us about your skills and experience</p>
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Skills *
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {WORKER_SKILLS.slice(0, 12).map((skill) => (
+                      <button
+                        key={skill}
+                        onClick={() => {
+                          const skills = verificationData.skills.includes(skill)
+                            ? verificationData.skills.filter((s) => s !== skill)
+                            : [...verificationData.skills, skill];
+                          setVerificationData({ ...verificationData, skills });
+                        }}
+                        className={`rounded-full border-2 px-4 py-2 font-medium transition-all ${
+                          verificationData.skills.includes(skill)
+                            ? "border-indigo bg-indigo text-white"
+                            : "border-midnight/20 bg-white text-midnight hover:border-indigo"
+                        }`}
+                      >
+                        {skill}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Years of Experience *
+                  </label>
+                  <select
+                    value={verificationData.experience}
+                    onChange={(e) => setVerificationData({ ...verificationData, experience: e.target.value })}
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  >
+                    <option value="">Select experience</option>
+                    <option value="0-1">Less than 1 year</option>
+                    <option value="1-3">1-3 years</option>
+                    <option value="3-5">3-5 years</option>
+                    <option value="5+">5+ years</option>
+                  </select>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(2)}
+                    className="flex-1 rounded-2xl border-2 border-midnight/20 py-4 font-semibold text-midnight transition-all hover:bg-mist"
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (verificationData.skills.length > 0 && verificationData.experience) {
+                        setStep(4);
+                      } else {
+                        showToast("Please fill all required fields", "error");
+                      }
+                    }}
+                    className="flex-1 rounded-2xl bg-gradient-to-r from-indigo to-violet py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+                  >
+                    Continue →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="font-display text-2xl font-bold">Review & Submit</h2>
+                  <p className="mt-2 text-midnight/60">Review your information before submitting</p>
+                </div>
+                <div className="space-y-4 rounded-2xl bg-cream p-6">
+                  <div>
+                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-midnight/60">Identity</p>
+                    <p className="mt-1 font-semibold">{verificationData.idType} - {verificationData.idNumber}</p>
+                  </div>
+                  <div>
+                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-midnight/60">Contact</p>
+                    <p className="mt-1 font-semibold">{verificationData.phone}</p>
+                    <p className="text-sm text-midnight/60">{verificationData.address}</p>
+                  </div>
+                  <div>
+                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-midnight/60">Skills</p>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {verificationData.skills.map((skill) => (
+                        <span key={skill} className="rounded-full bg-indigo/10 px-3 py-1 font-mono text-xs font-semibold text-indigo">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-midnight/60">Experience</p>
+                    <p className="mt-1 font-semibold">{verificationData.experience} years</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(3)}
+                    className="flex-1 rounded-2xl border-2 border-midnight/20 py-4 font-semibold text-midnight transition-all hover:bg-mist"
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    onClick={() => {
+                      showToast("Verification submitted! We'll review within 48 hours.", "success");
+                      navigate("my-profile");
+                    }}
+                    className="flex-1 rounded-2xl bg-gradient-to-r from-indigo to-violet py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+                  >
+                    Submit Verification ✓
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== DISPUTES =====
+function Disputes({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [activeTab, setActiveTab] = useState<"open" | "resolved" | "new">("open");
+  const [newDispute, setNewDispute] = useState({
+    taskId: "",
+    reason: "",
+    description: "",
+    evidence: "",
+  });
+
+  const openDisputes = [
+    {
+      id: "DSP-001",
+      task: "Deep clean apartment",
+      worker: "Yuki Tanaka",
+      reason: "Work not completed as agreed",
+      status: "Under Review",
+      date: "Dec 10, 2024",
+      amount: "¥18,000",
+    },
+    {
+      id: "DSP-002",
+      task: "Plumbing repair",
+      worker: "Ahmed Hassan",
+      reason: "Damage to property",
+      status: "Mediation",
+      date: "Dec 8, 2024",
+      amount: "¥12,500",
+    },
+  ];
+
+  const resolvedDisputes = [
+    {
+      id: "DSP-003",
+      task: "Moving help",
+      worker: "João Santos",
+      reason: "Late arrival",
+      resolution: "Partial refund issued",
+      date: "Dec 5, 2024",
+      amount: "¥8,000",
+    },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-5xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Disputes</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Dispute Resolution</h1>
+            <p className="mt-3 text-lg text-midnight/60">Resolve issues fairly and quickly</p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={100}>
+          <div className="mb-8 flex gap-2 overflow-x-auto rounded-2xl border-2 border-midnight/10 bg-white p-2">
+            {[
+              { id: "open" as const, label: "Open Disputes", count: openDisputes.length },
+              { id: "resolved" as const, label: "Resolved", count: resolvedDisputes.length },
+              { id: "new" as const, label: "File New Dispute" },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`flex shrink-0 items-center gap-2 rounded-xl px-5 py-3 font-semibold transition-all ${
+                  activeTab === t.id
+                    ? "bg-gradient-to-r from-indigo to-violet text-white shadow-lg"
+                    : "text-midnight/60 hover:bg-mist"
+                }`}
+              >
+                {t.label}
+                {"count" in t && (
+                  <span className={`rounded-full px-2 py-0.5 text-xs ${activeTab === t.id ? "bg-white/20" : "bg-mist"}`}>
+                    {t.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal delay={150}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            {activeTab === "open" && (
+              <div>
+                <h2 className="font-display text-2xl font-bold">Open Disputes</h2>
+                <div className="mt-6 space-y-4">
+                  {openDisputes.map((dispute) => (
+                    <div key={dispute.id} className="rounded-2xl border-2 border-amber/30 bg-amber/5 p-6">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-full bg-amber/10 px-3 py-1 font-mono text-xs font-semibold text-amber">
+                              {dispute.status}
+                            </span>
+                            <span className="font-mono text-xs text-midnight/40">{dispute.id}</span>
+                          </div>
+                          <h3 className="mt-2 font-display text-lg font-bold">{dispute.task}</h3>
+                          <p className="mt-1 font-mono text-sm text-midnight/60">Worker: {dispute.worker}</p>
+                        </div>
+                        <p className="font-display text-xl font-bold">{dispute.amount}</p>
+                      </div>
+                      <p className="mt-4 text-midnight/70">{dispute.reason}</p>
+                      <div className="mt-4 flex items-center justify-between border-t border-midnight/10 pt-4">
+                        <p className="font-mono text-xs text-midnight/40">{dispute.date}</p>
+                        <button className="rounded-full border border-midnight/20 px-4 py-2 font-mono text-xs font-semibold text-midnight hover:bg-mist">
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "resolved" && (
+              <div>
+                <h2 className="font-display text-2xl font-bold">Resolved Disputes</h2>
+                <div className="mt-6 space-y-4">
+                  {resolvedDisputes.map((dispute) => (
+                    <div key={dispute.id} className="rounded-2xl border-2 border-emerald/30 bg-emerald/5 p-6">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                              Resolved
+                            </span>
+                            <span className="font-mono text-xs text-midnight/40">{dispute.id}</span>
+                          </div>
+                          <h3 className="mt-2 font-display text-lg font-bold">{dispute.task}</h3>
+                          <p className="mt-1 font-mono text-sm text-midnight/60">Worker: {dispute.worker}</p>
+                        </div>
+                        <p className="font-display text-xl font-bold">{dispute.amount}</p>
+                      </div>
+                      <p className="mt-4 text-midnight/70">{dispute.resolution}</p>
+                      <div className="mt-4 flex items-center justify-between border-t border-midnight/10 pt-4">
+                        <p className="font-mono text-xs text-midnight/40">{dispute.date}</p>
+                        <button className="rounded-full border border-midnight/20 px-4 py-2 font-mono text-xs font-semibold text-midnight hover:bg-mist">
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "new" && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="font-display text-2xl font-bold">File New Dispute</h2>
+                  <p className="mt-2 text-midnight/60">Tell us about the issue you're experiencing</p>
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Task ID *
+                  </label>
+                  <input
+                    type="text"
+                    value={newDispute.taskId}
+                    onChange={(e) => setNewDispute({ ...newDispute, taskId: e.target.value })}
+                    placeholder="e.g., TASK-12345"
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Reason *
+                  </label>
+                  <select
+                    value={newDispute.reason}
+                    onChange={(e) => setNewDispute({ ...newDispute, reason: e.target.value })}
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  >
+                    <option value="">Select reason</option>
+                    <option value="not-completed">Work not completed</option>
+                    <option value="poor-quality">Poor quality work</option>
+                    <option value="damage">Property damage</option>
+                    <option value="no-show">Worker didn't show up</option>
+                    <option value="overcharge">Overcharged</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Description *
+                  </label>
+                  <textarea
+                    value={newDispute.description}
+                    onChange={(e) => setNewDispute({ ...newDispute, description: e.target.value })}
+                    placeholder="Describe the issue in detail..."
+                    rows={5}
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Evidence (Optional)
+                  </label>
+                  <div className="rounded-2xl border-2 border-dashed border-midnight/20 bg-cream p-6 text-center">
+                    <p className="text-3xl">📎</p>
+                    <p className="mt-2 font-semibold">Upload photos or documents</p>
+                    <p className="mt-1 font-mono text-xs text-midnight/40">PNG, JPG, PDF up to 10MB</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    if (newDispute.taskId && newDispute.reason && newDispute.description) {
+                      showToast("Dispute filed successfully! We'll review within 24 hours.", "success");
+                      setActiveTab("open");
+                    } else {
+                      showToast("Please fill all required fields", "error");
+                    }
+                  }}
+                  className="w-full rounded-2xl bg-gradient-to-r from-indigo to-violet py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+                >
+                  Submit Dispute
+                </button>
+              </div>
+            )}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== REFERRALS =====
+function Referrals({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const referralCode = "SKILL-JOHN2024";
+  const referralLink = "https://skillhub.com/ref/SKILL-JOHN2024";
+
+  const referralStats = [
+    { label: "Total Referrals", value: "12", icon: "👥" },
+    { label: "Successful", value: "8", icon: "✓" },
+    { label: "Earnings", value: "¥24,000", icon: "💰" },
+    { label: "Pending", value: "4", icon: "⏳" },
+  ];
+
+  const referrals = [
+    { name: "Maria Silva", status: "Completed", earned: "¥3,000", date: "Dec 10, 2024" },
+    { name: "Ahmed Hassan", status: "Completed", earned: "¥3,000", date: "Dec 8, 2024" },
+    { name: "João Santos", status: "Pending", earned: "¥3,000", date: "Dec 5, 2024" },
+    { name: "Priya Sharma", status: "Pending", earned: "¥3,000", date: "Dec 3, 2024" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-5xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Referrals</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Refer & Earn</h1>
+            <p className="mt-3 text-lg text-midnight/60">Earn ¥3,000 for every friend who joins and completes a task</p>
+          </div>
+        </Reveal>
+
+        {/* Referral Code Card */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl bg-gradient-to-br from-indigo via-violet to-amber p-8 text-white shadow-2xl md:p-10">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="font-mono text-sm uppercase tracking-[0.2em] text-white/70">Your Referral Code</p>
+                <p className="mt-2 font-display text-4xl font-black md:text-5xl">{referralCode}</p>
+                <p className="mt-3 font-mono text-sm text-white/70">Share this code with friends</p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(referralCode);
+                    showToast("Referral code copied!", "success");
+                  }}
+                  className="rounded-full bg-white px-6 py-3 font-semibold text-midnight shadow-lg transition-all hover:scale-105"
+                >
+                  📋 Copy Code
+                </button>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(referralLink);
+                    showToast("Referral link copied!", "success");
+                  }}
+                  className="rounded-full border-2 border-white/30 bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20"
+                >
+                  🔗 Copy Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Stats */}
+        <Reveal delay={150}>
+          <div className="mt-8 grid gap-6 md:grid-cols-4">
+            {referralStats.map((stat) => (
+              <div key={stat.label} className="rounded-3xl border-2 border-midnight/10 bg-white p-6 text-center shadow-xl">
+                <span className="text-4xl">{stat.icon}</span>
+                <p className="mt-3 font-display text-3xl font-black">{stat.value}</p>
+                <p className="mt-1 font-mono text-sm text-midnight/60">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Referral History */}
+        <Reveal delay={200}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Referral History</h2>
+            <div className="mt-6 space-y-3">
+              {referrals.map((ref, i) => (
+                <div key={i} className="flex items-center justify-between rounded-2xl border border-midnight/10 bg-cream p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-indigo to-violet text-xl">
+                      👤
+                    </div>
+                    <div>
+                      <p className="font-semibold">{ref.name}</p>
+                      <p className="font-mono text-xs text-midnight/50">{ref.date}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-display font-bold">{ref.earned}</p>
+                    <span className={`rounded-full px-3 py-1 font-mono text-xs font-semibold ${
+                      ref.status === "Completed" ? "bg-emerald/10 text-emerald" : "bg-amber/10 text-amber"
+                    }`}>
+                      {ref.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* How it Works */}
+        <Reveal delay={250}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">How It Works</h2>
+            <div className="mt-6 grid gap-6 md:grid-cols-3">
+              {[
+                { step: "1", title: "Share Your Code", desc: "Send your referral code to friends", icon: "📤" },
+                { step: "2", title: "Friend Joins", desc: "They sign up using your code", icon: "👥" },
+                { step: "3", title: "Earn Rewards", desc: "Get ¥3,000 when they complete a task", icon: "💰" },
+              ].map((item) => (
+                <div key={item.step} className="text-center">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo to-violet text-3xl">
+                    {item.icon}
+                  </div>
+                  <h3 className="mt-4 font-display text-lg font-bold">Step {item.step}: {item.title}</h3>
+                  <p className="mt-2 text-midnight/60">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== ACHIEVEMENTS =====
+function Achievements({ navigate }: { navigate: (v: View) => void }) {
+  const achievements = [
+    { id: 1, title: "First Task", desc: "Complete your first task", icon: "🎯", progress: 100, unlocked: true },
+    { id: 2, title: "Task Master", desc: "Complete 10 tasks", icon: "⭐", progress: 80, unlocked: false },
+    { id: 3, title: "High Roller", desc: "Spend ¥100,000", icon: "💎", progress: 60, unlocked: false },
+    { id: 4, title: "Social Butterfly", desc: "Refer 5 friends", icon: "🦋", progress: 40, unlocked: false },
+    { id: 5, title: "Top Rater", desc: "Leave 20 reviews", icon: "📝", progress: 90, unlocked: false },
+    { id: 6, title: "Loyal Customer", desc: "Member for 1 year", icon: "🏆", progress: 100, unlocked: true },
+    { id: 7, title: "Quick Responder", desc: "Respond within 1 hour", icon: "⚡", progress: 70, unlocked: false },
+    { id: 8, title: "Power User", desc: "Use all platform features", icon: "🚀", progress: 50, unlocked: false },
+  ];
+
+  const badges = [
+    { name: "Verified User", icon: "✓", color: "from-emerald to-indigo" },
+    { name: "Top Rater", icon: "⭐", color: "from-amber to-violet" },
+    { name: "Fast Payer", icon: "💰", color: "from-indigo to-violet" },
+    { name: "Referral King", icon: "👑", color: "from-violet to-amber" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Achievements</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Your Achievements</h1>
+            <p className="mt-3 text-lg text-midnight/60">Unlock badges and rewards as you use the platform</p>
+          </div>
+        </Reveal>
+
+        {/* Badges */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Your Badges</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-4">
+              {badges.map((badge) => (
+                <div key={badge.name} className="text-center">
+                  <div className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br ${badge.color} text-3xl shadow-lg`}>
+                    {badge.icon}
+                  </div>
+                  <p className="mt-3 font-semibold">{badge.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Achievements */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Achievements</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {achievements.map((achievement) => (
+                <div
+                  key={achievement.id}
+                  className={`rounded-2xl border-2 p-6 ${
+                    achievement.unlocked
+                      ? "border-emerald/30 bg-emerald/5"
+                      : "border-midnight/10 bg-cream"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className={`flex h-16 w-16 items-center justify-center rounded-2xl text-3xl ${
+                      achievement.unlocked
+                        ? "bg-gradient-to-br from-emerald to-indigo"
+                        : "bg-mist"
+                    }`}>
+                      {achievement.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-display text-lg font-bold">{achievement.title}</h3>
+                        {achievement.unlocked && (
+                          <span className="rounded-full bg-emerald/10 px-2 py-0.5 font-mono text-xs font-semibold text-emerald">
+                            Unlocked
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 text-sm text-midnight/60">{achievement.desc}</p>
+                      <div className="mt-3">
+                        <div className="flex items-center justify-between font-mono text-xs">
+                          <span>{achievement.progress}%</span>
+                          <span>{achievement.progress}/100</span>
+                        </div>
+                        <div className="mt-1 h-2 overflow-hidden rounded-full bg-mist">
+                          <div
+                            className={`h-full rounded-full ${
+                              achievement.unlocked
+                                ? "bg-gradient-to-r from-emerald to-indigo"
+                                : "bg-gradient-to-r from-indigo to-violet"
+                            }`}
+                            style={{ width: `${achievement.progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Rewards */}
+        <Reveal delay={200}>
+          <div className="mt-8 rounded-3xl bg-gradient-to-r from-indigo via-violet to-amber p-8 text-white shadow-2xl">
+            <h2 className="font-display text-2xl font-bold">Unlock More Rewards</h2>
+            <p className="mt-2 text-white/80">Complete more tasks and achievements to unlock exclusive rewards</p>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {[
+                { title: "Premium Support", desc: "Priority customer support", icon: "🎧" },
+                { title: "Lower Fees", desc: "Reduced platform fees", icon: "💸" },
+                { title: "Exclusive Features", desc: "Access to beta features", icon: "🚀" },
+              ].map((reward) => (
+                <div key={reward.title} className="rounded-2xl bg-white/10 p-5 backdrop-blur-sm">
+                  <span className="text-3xl">{reward.icon}</span>
+                  <h3 className="mt-3 font-bold">{reward.title}</h3>
+                  <p className="mt-1 text-sm text-white/70">{reward.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </Reveal>
