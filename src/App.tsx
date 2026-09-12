@@ -45,6 +45,7 @@ const LoginPage = lazy(() => import("./components/pages/LoginPage").then(m => ({
 const RegisterPage = lazy(() => import("./components/pages/RegisterPage").then(m => ({ default: m.RegisterPage })));
 const SettingsPage = lazy(() => import("./components/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 const NotFoundPage = lazy(() => import("./components/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+const ChatPage = lazy(() => import("./components/pages/ChatPage").then(m => ({ default: m.ChatPage })));
 
 // Loading component
 function PageLoader() {
@@ -64,6 +65,7 @@ type View =
   | "register"
   | "forgot-password"
   | "settings"
+  | "chat"
   | "mission-compiler"
   | "execution-dashboard"
   | "outcome-graph"
@@ -171,6 +173,7 @@ function AppContent() {
           {view === "mission-compiler" && <MissionCompilerPage onNavigate={navigate} />}
           {view === "execution-dashboard" && <ExecutionDashboard onNavigate={navigate} />}
           {view === "404" && <NotFoundPage onNavigate={navigate} />}
+          {view === "chat" && <ChatPage onNavigate={navigate} />}
         </Suspense>
         {view === "get-help" && <GetHelp navigate={navigate} setSelectedTask={setSelectedTask} savedTasks={savedTasks} toggleSaveTask={toggleSaveTask} />}
         {view === "post-task" && <PostTask navigate={navigate} showToast={showToast} />}
@@ -344,6 +347,7 @@ function Nav({ view, navigate, savedCount, unreadNotifications, darkMode, setDar
             {[
               { label: "Mission Compiler", view: "mission-compiler" as View, icon: "🧠" },
               { label: "Execution Dashboard", view: "execution-dashboard" as View, icon: "⚡" },
+              { label: "Chat", view: "chat" as View, icon: "💬" },
               { label: "Get Help", view: "get-help" as View, icon: "🛠️" },
               { label: "Hire People", view: "hire-people" as View, icon: "🏢" },
               { label: "Find Workers", view: "find-workers" as View, icon: "👥" },
