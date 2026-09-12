@@ -1,6 +1,6 @@
 // ===== DOMAIN ENTITIES =====
 
-import type { WorkerSkill } from "../../types";
+import type { WorkerSkill } from "../../../types";
 
 /**
  * Worker Entity - Core business entity

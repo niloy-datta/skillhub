@@ -32,6 +32,7 @@ import {
   CompanyMark,
   WorkerAvatar,
 } from "./components/Icons";
+import { WorkerMap, TaskMap, CompanyMap } from "./components/Map";
 
 type View =
   | "home"
@@ -458,6 +459,8 @@ function GetHelp({
   savedTasks: Set<string>;
   toggleSaveTask: (taskId: string) => void;
 }) {
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  
   const openTask = (task: Task) => {
     setSelectedTask(task);
     navigate("task-detail");
@@ -515,24 +518,60 @@ function GetHelp({
 
         {/* Sample tasks */}
         <Reveal delay={200}>
-          <div className="mb-8 flex items-baseline justify-between">
+          <div className="mb-8 flex items-center justify-between">
             <h2 className="font-display text-3xl font-bold">Recent tasks</h2>
-            <p className="font-mono text-sm text-midnight/60">{SAMPLE_TASKS.length} tasks available</p>
+            <div className="flex items-center gap-4">
+              <p className="font-mono text-sm text-midnight/60">{SAMPLE_TASKS.length} tasks available</p>
+              <div className="flex gap-2 rounded-full border-2 border-midnight/10 bg-white p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`rounded-full px-4 py-2 font-mono text-sm font-semibold transition-all ${
+                    viewMode === 'list' 
+                      ? 'bg-indigo text-white' 
+                      : 'text-midnight/60 hover:bg-mist'
+                  }`}
+                >
+                  📋 List
+                </button>
+                <button
+                  onClick={() => setViewMode('map')}
+                  className={`rounded-full px-4 py-2 font-mono text-sm font-semibold transition-all ${
+                    viewMode === 'map' 
+                      ? 'bg-indigo text-white' 
+                      : 'text-midnight/60 hover:bg-mist'
+                  }`}
+                >
+                  🗺️ Map
+                </button>
+              </div>
+            </div>
           </div>
         </Reveal>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {SAMPLE_TASKS.map((task, i) => (
-            <Reveal key={task.id} delay={250 + i * 50}>
-              <TaskCard
-                task={task}
-                onClick={() => openTask(task)}
-                saved={savedTasks.has(task.id)}
-                onToggleSave={() => toggleSaveTask(task.id)}
-              />
-            </Reveal>
-          ))}
-        </div>
+        {/* Map View */}
+        {viewMode === 'map' && (
+          <Reveal delay={250}>
+            <div className="mb-8 overflow-hidden rounded-3xl border-2 border-midnight/10 shadow-xl">
+              <TaskMap tasks={SAMPLE_TASKS} height="600px" />
+            </div>
+          </Reveal>
+        )}
+
+        {/* List View */}
+        {viewMode === 'list' && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {SAMPLE_TASKS.map((task, i) => (
+              <Reveal key={task.id} delay={250 + i * 50}>
+                <TaskCard
+                  task={task}
+                  onClick={() => openTask(task)}
+                  saved={savedTasks.has(task.id)}
+                  onToggleSave={() => toggleSaveTask(task.id)}
+                />
+              </Reveal>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -1039,6 +1078,8 @@ function HirePeople({
   navigate: (v: View) => void;
   setSelectedCompany: (c: Company) => void;
 }) {
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  
   const openCompany = (company: Company) => {
     setSelectedCompany(company);
     navigate("company-profile");
@@ -1077,19 +1118,55 @@ function HirePeople({
 
         {/* Companies */}
         <Reveal delay={150}>
-          <div className="mb-8 flex items-baseline justify-between">
+          <div className="mb-8 flex items-center justify-between">
             <h2 className="font-display text-3xl font-bold">Companies hiring now</h2>
-            <p className="font-mono text-sm text-midnight/60">{COMPANIES.length} verified employers</p>
+            <div className="flex items-center gap-4">
+              <p className="font-mono text-sm text-midnight/60">{COMPANIES.length} verified employers</p>
+              <div className="flex gap-2 rounded-full border-2 border-midnight/10 bg-white p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`rounded-full px-4 py-2 font-mono text-sm font-semibold transition-all ${
+                    viewMode === 'list' 
+                      ? 'bg-indigo text-white' 
+                      : 'text-midnight/60 hover:bg-mist'
+                  }`}
+                >
+                  📋 List
+                </button>
+                <button
+                  onClick={() => setViewMode('map')}
+                  className={`rounded-full px-4 py-2 font-mono text-sm font-semibold transition-all ${
+                    viewMode === 'map' 
+                      ? 'bg-indigo text-white' 
+                      : 'text-midnight/60 hover:bg-mist'
+                  }`}
+                >
+                  🗺️ Map
+                </button>
+              </div>
+            </div>
           </div>
         </Reveal>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {COMPANIES.map((company, i) => (
-            <Reveal key={company.id} delay={200 + i * 50}>
-              <CompanyCard company={company} onClick={() => openCompany(company)} />
-            </Reveal>
-          ))}
-        </div>
+        {/* Map View */}
+        {viewMode === 'map' && (
+          <Reveal delay={200}>
+            <div className="mb-8 overflow-hidden rounded-3xl border-2 border-midnight/10 shadow-xl">
+              <CompanyMap companies={COMPANIES} height="600px" />
+            </div>
+          </Reveal>
+        )}
+
+        {/* List View */}
+        {viewMode === 'list' && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {COMPANIES.map((company, i) => (
+              <Reveal key={company.id} delay={200 + i * 50}>
+                <CompanyCard company={company} onClick={() => openCompany(company)} />
+              </Reveal>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -1467,6 +1544,8 @@ function FindWorkers({
   toggleSaveWorker: (workerId: string) => void;
   showToast: (message: string, type?: "success" | "error" | "info") => void;
 }) {
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  
   const openWorker = (worker: Worker) => {
     setSelectedWorker(worker);
     navigate("worker-profile");
@@ -1525,27 +1604,63 @@ function FindWorkers({
           </div>
         </Reveal>
 
-        {/* Workers */}
+        {/* View Toggle */}
         <Reveal delay={200}>
-          <div className="mb-8 flex items-baseline justify-between">
+          <div className="mb-8 flex items-center justify-between">
             <h2 className="font-display text-3xl font-bold">Verified workers</h2>
-            <p className="font-mono text-sm text-midnight/60">{WORKERS.length} workers available</p>
+            <div className="flex items-center gap-4">
+              <p className="font-mono text-sm text-midnight/60">{WORKERS.length} workers available</p>
+              <div className="flex gap-2 rounded-full border-2 border-midnight/10 bg-white p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`rounded-full px-4 py-2 font-mono text-sm font-semibold transition-all ${
+                    viewMode === 'list' 
+                      ? 'bg-indigo text-white' 
+                      : 'text-midnight/60 hover:bg-mist'
+                  }`}
+                >
+                  📋 List
+                </button>
+                <button
+                  onClick={() => setViewMode('map')}
+                  className={`rounded-full px-4 py-2 font-mono text-sm font-semibold transition-all ${
+                    viewMode === 'map' 
+                      ? 'bg-indigo text-white' 
+                      : 'text-midnight/60 hover:bg-mist'
+                  }`}
+                >
+                  🗺️ Map
+                </button>
+              </div>
+            </div>
           </div>
         </Reveal>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {WORKERS.map((worker, i) => (
-            <Reveal key={worker.id} delay={250 + i * 50}>
-              <WorkerCard
-                worker={worker}
-                onClick={() => openWorker(worker)}
-                saved={savedWorkers.has(worker.id)}
-                onToggleSave={() => toggleSaveWorker(worker.id)}
-                onInvite={() => showToast(`Invitation sent to ${worker.name}!`, "success")}
-              />
-            </Reveal>
-          ))}
-        </div>
+        {/* Map View */}
+        {viewMode === 'map' && (
+          <Reveal delay={250}>
+            <div className="mb-8 overflow-hidden rounded-3xl border-2 border-midnight/10 shadow-xl">
+              <WorkerMap workers={WORKERS} height="600px" />
+            </div>
+          </Reveal>
+        )}
+
+        {/* List View */}
+        {viewMode === 'list' && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {WORKERS.map((worker, i) => (
+              <Reveal key={worker.id} delay={250 + i * 50}>
+                <WorkerCard
+                  worker={worker}
+                  onClick={() => openWorker(worker)}
+                  saved={savedWorkers.has(worker.id)}
+                  onToggleSave={() => toggleSaveWorker(worker.id)}
+                  onInvite={() => showToast(`Invitation sent to ${worker.name}!`, "success")}
+                />
+              </Reveal>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
