@@ -1,81 +1,22 @@
-// ===== CORE TYPES =====
+// ===== DOMAIN TYPES =====
 
-export type View =
-  | "home"
-  | "get-help"
-  | "post-task"
-  | "task-detail"
-  | "hire-people"
-  | "post-job"
-  | "find-workers"
-  | "worker-profile"
-  | "company-profile"
-  | "business-workspace"
-  | "my-profile"
-  | "messages"
-  | "notifications"
-  | "analytics"
-  | "payments"
-  | "help-center"
-  | "verification"
-  | "disputes"
-  | "referrals"
-  | "achievements"
-  | "social-sharing"
-  | "coupons"
-  | "loyalty"
-  | "leaderboard"
-  | "team"
-  | "video-call"
-  | "language"
-  | "forecasting"
-  | "trends"
-  | "insights";
+export type UserRole = 'worker' | 'client' | 'admin';
 
-export type ToastType = "success" | "error" | "info";
+export type WorkMode = 'Remote' | 'Hybrid' | 'On-site';
+export type JobType = 'Full-time' | 'Part-time' | 'Contract';
+export type TaskStatus = 'open' | 'in-progress' | 'completed' | 'cancelled';
+export type JobStatus = 'active' | 'paused' | 'filled' | 'closed';
 
-export interface Toast {
-  message: string;
-  type: ToastType;
-}
-
-export type WorkerSkill =
-  | "House Cleaning"
-  | "Deep Cleaning"
-  | "Plumbing"
-  | "Electrical"
-  | "Painting"
-  | "Carpentry"
-  | "Moving"
-  | "Packing"
-  | "Gardening"
-  | "Cooking"
-  | "Caregiving"
-  | "Elderly Care"
-  | "Child Care"
-  | "Warehouse"
-  | "Forklift"
-  | "Kitchen"
-  | "Serving"
-  | "Housekeeping"
-  | "Laundry"
-  | "Security"
-  | "Driving"
-  | "Delivery"
-  | "Construction"
-  | "Masonry"
-  | "Welding"
-  | "Repair";
-
+// ===== WORKER =====
 export interface Worker {
   id: string;
   name: string;
   avatar: string;
+  title: string;
   city: string;
   country: string;
-  distanceKm?: number;
-  skills: WorkerSkill[];
-  verifiedSkills: WorkerSkill[];
+  skills: string[];
+  verifiedSkills: string[];
   humanVerified: boolean;
   rating: number;
   reviews: number;
@@ -84,12 +25,12 @@ export interface Worker {
   currency: string;
   languages: string[];
   availableNow: boolean;
-  nextAvailable?: string;
   bio: string;
   joinedYear: number;
   responseTime: string;
 }
 
+// ===== COMPANY =====
 export interface Company {
   id: string;
   name: string;
@@ -103,31 +44,17 @@ export interface Company {
   activeShifts: number;
   workerRating: number;
   paymentReliability: number;
-  jobAccuracy: number;
-  workEnvironment: number;
-  communication: number;
-  safety: number;
   responseRate: number;
-  repeatWorkerRate: number;
   tagline: string;
   description: string;
   perks: string[];
-  hue: number;
 }
 
-export type TaskCategory =
-  | "Cleaning"
-  | "Plumbing"
-  | "Moving"
-  | "Painting"
-  | "Gardening"
-  | "Repair"
-  | "Caregiving"
-  | "Household Help"
-  | "Electrical"
-  | "Appliance Repair"
-  | "Cooking"
-  | "Laundry";
+// ===== TASK =====
+export type TaskCategory = 
+  | 'Cleaning' | 'Plumbing' | 'Moving' | 'Painting' 
+  | 'Gardening' | 'Repair' | 'Caregiving' | 'Household Help'
+  | 'Electrical' | 'Cooking' | 'Laundry';
 
 export interface Task {
   id: string;
@@ -146,55 +73,79 @@ export interface Task {
   specialRequirements: string[];
   postedHours: number;
   offersCount: number;
-  status: "open" | "in-progress" | "completed";
+  status: TaskStatus;
   clientName: string;
 }
 
-export interface BusinessJob {
+// ===== JOB =====
+export interface Job {
   id: string;
   companyId: string;
-  type: "regular" | "shift" | "crew";
+  companyName: string;
+  companyLogo: string;
+  type: 'regular' | 'shift' | 'crew';
   role: string;
   location: string;
   pay: string;
   schedule: string;
-  employment: "Full-time" | "Part-time" | "Contract";
+  employment: JobType;
   requirements: string[];
   experience: string;
-  languages: string[];
   positions: number;
   postedHours: number;
   applicants: number;
-  status: "active" | "paused" | "filled";
+  status: JobStatus;
   date?: string;
   startTime?: string;
   endTime?: string;
-  hourlyRate?: number;
-  currency?: string;
-  uniform?: string;
-  meal?: boolean;
-  transport?: boolean;
 }
 
-export interface CompanyReview {
+// ===== CHAT =====
+export type ChatCategory = 'ai-assistant' | 'mission-support' | 'worker-chat' | 'team-chat';
+
+export interface ChatMessage {
   id: string;
-  companyId: string;
-  workerName: string;
-  workerAvatar: string;
-  role: string;
-  date: string;
-  paymentReliability: number;
-  jobAccuracy: number;
-  workEnvironment: number;
-  communication: number;
-  safety: number;
-  comment: string;
-  verifiedWork: boolean;
-  communityComments: number;
+  chatId: string;
+  senderId: string;
+  senderName: string;
+  senderAvatar: string;
+  senderType: 'user' | 'agent' | 'worker' | 'system';
+  type: 'text' | 'system' | 'mission-update';
+  content: string;
+  timestamp: string;
+  status: 'sending' | 'sent' | 'delivered' | 'read';
 }
 
-export interface NavItem {
-  label: string;
-  view: View;
+export interface Chat {
+  id: string;
+  category: ChatCategory;
+  title: string;
+  participants: { id: string; name: string; avatar: string; type: string; status: string }[];
+  messages: ChatMessage[];
+  lastMessage?: ChatMessage;
+  unreadCount: number;
+  isPinned: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ===== NOTIFICATION =====
+export interface Notification {
+  id: string;
+  type: 'task' | 'job' | 'message' | 'payment' | 'system';
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
   icon: string;
+}
+
+// ===== USER =====
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  role: UserRole;
+  verified: boolean;
 }

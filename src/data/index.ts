@@ -1,15 +1,14 @@
-import type { Worker, Company, Task, BusinessJob, CompanyReview } from "../types";
+import type { Worker, Company, Task, Job, Chat, Notification } from "../types";
 
-// ===== SAMPLE WORKERS =====
-
+// ===== WORKERS =====
 export const WORKERS: Worker[] = [
   {
     id: "w1",
     name: "Rahim Uddin",
     avatar: "👷",
+    title: "Warehouse Specialist",
     city: "Gazipur",
     country: "Bangladesh",
-    distanceKm: 3.2,
     skills: ["Warehouse", "Forklift", "Packing", "Moving"],
     verifiedSkills: ["Warehouse", "Forklift"],
     humanVerified: true,
@@ -28,9 +27,9 @@ export const WORKERS: Worker[] = [
     id: "w2",
     name: "Yuki Tanaka",
     avatar: "👩",
+    title: "Housekeeping Expert",
     city: "Shinjuku, Tokyo",
     country: "Japan",
-    distanceKm: 1.1,
     skills: ["Housekeeping", "Laundry", "Cooking", "House Cleaning"],
     verifiedSkills: ["Housekeeping", "Cooking"],
     humanVerified: true,
@@ -49,9 +48,9 @@ export const WORKERS: Worker[] = [
     id: "w3",
     name: "Ahmed Hassan",
     avatar: "👨‍🔧",
+    title: "Construction Specialist",
     city: "Deira, Dubai",
     country: "UAE",
-    distanceKm: 5.8,
     skills: ["Construction", "Masonry", "Painting", "Electrical"],
     verifiedSkills: ["Construction", "Electrical"],
     humanVerified: true,
@@ -62,7 +61,6 @@ export const WORKERS: Worker[] = [
     currency: "AED",
     languages: ["Arabic", "English", "Hindi"],
     availableNow: false,
-    nextAvailable: "Tomorrow 07:00",
     bio: "12 years construction in UAE. Can handle any site job. Safety certified.",
     joinedYear: 2018,
     responseTime: "< 30 min",
@@ -71,9 +69,9 @@ export const WORKERS: Worker[] = [
     id: "w4",
     name: "Maria Silva",
     avatar: "👩‍🍳",
+    title: "Cook & Housekeeper",
     city: "Alfama, Lisbon",
     country: "Portugal",
-    distanceKm: 2.4,
     skills: ["Cooking", "House Cleaning", "Laundry", "Caregiving"],
     verifiedSkills: ["Cooking"],
     humanVerified: false,
@@ -92,9 +90,9 @@ export const WORKERS: Worker[] = [
     id: "w5",
     name: "Priya Sharma",
     avatar: "👩‍⚕️",
+    title: "Certified Caregiver",
     city: "Andheri, Mumbai",
     country: "India",
-    distanceKm: 4.5,
     skills: ["Caregiving", "Elderly Care", "House Cleaning", "Cooking"],
     verifiedSkills: ["Caregiving", "Elderly Care"],
     humanVerified: true,
@@ -113,9 +111,9 @@ export const WORKERS: Worker[] = [
     id: "w6",
     name: "João Santos",
     avatar: "🚚",
+    title: "Licensed Driver",
     city: "Vila Madalena, São Paulo",
     country: "Brazil",
-    distanceKm: 6.2,
     skills: ["Driving", "Delivery", "Moving", "Packing"],
     verifiedSkills: ["Driving"],
     humanVerified: false,
@@ -132,8 +130,7 @@ export const WORKERS: Worker[] = [
   },
 ];
 
-// ===== SAMPLE COMPANIES =====
-
+// ===== COMPANIES =====
 export const COMPANIES: Company[] = [
   {
     id: "c1",
@@ -148,17 +145,10 @@ export const COMPANIES: Company[] = [
     activeShifts: 24,
     workerRating: 4.8,
     paymentReliability: 5.0,
-    jobAccuracy: 4.9,
-    workEnvironment: 4.7,
-    communication: 4.8,
-    safety: 4.9,
     responseRate: 98,
-    repeatWorkerRate: 87,
     tagline: "Luxury hotel seeking reliable housekeeping and kitchen staff",
-    description:
-      "5-star hotel in the heart of Shinjuku. We treat our temporary workers like family — on-time payment, clean break rooms, respectful management.",
+    description: "5-star hotel in the heart of Shinjuku. We treat our temporary workers like family.",
     perks: ["On-time payment", "Free meals on shift", "Transport covered", "Uniform provided"],
-    hue: 220,
   },
   {
     id: "c2",
@@ -173,17 +163,10 @@ export const COMPANIES: Company[] = [
     activeShifts: 42,
     workerRating: 4.6,
     paymentReliability: 4.9,
-    jobAccuracy: 4.5,
-    workEnvironment: 4.3,
-    communication: 4.6,
-    safety: 4.8,
     responseRate: 95,
-    repeatWorkerRate: 72,
     tagline: "Fast-growing logistics hub — always need reliable hands",
-    description:
-      "Major warehouse and distribution center in Jebel Ali Free Zone. We hire crews regularly for seasonal peaks. AC facility, safety gear provided.",
+    description: "Major warehouse and distribution center in Jebel Ali Free Zone.",
     perks: ["AC facility", "Safety gear provided", "Weekly payment", "Overtime paid"],
-    hue: 30,
   },
   {
     id: "c3",
@@ -198,29 +181,20 @@ export const COMPANIES: Company[] = [
     activeShifts: 12,
     workerRating: 4.9,
     paymentReliability: 5.0,
-    jobAccuracy: 5.0,
-    workEnvironment: 4.9,
-    communication: 4.9,
-    safety: 4.8,
     responseRate: 100,
-    repeatWorkerRate: 92,
     tagline: "Family-run café — we hire people we'd invite to dinner",
-    description:
-      "Historic café in Chiado since 1922. Small team, big heart. We pay cash on the day, feed you well, and treat you like family.",
+    description: "Historic café in Chiado since 1922. Small team, big heart.",
     perks: ["Cash same day", "Free meals", "Tips shared", "Flexible hours"],
-    hue: 15,
   },
 ];
 
-// ===== SAMPLE TASKS =====
-
-export const SAMPLE_TASKS: Task[] = [
+// ===== TASKS =====
+export const TASKS: Task[] = [
   {
     id: "t1",
     title: "Deep clean 2-bedroom apartment",
     category: "Cleaning",
-    description:
-      "Need a thorough deep clean of my apartment before moving out. Kitchen, bathrooms, floors, windows. Supplies provided.",
+    description: "Need a thorough deep clean of my apartment before moving out. Kitchen, bathrooms, floors, windows. Supplies provided.",
     country: "Japan",
     city: "Tokyo",
     area: "Shinjuku",
@@ -240,8 +214,7 @@ export const SAMPLE_TASKS: Task[] = [
     id: "t2",
     title: "Fix leaking kitchen tap",
     category: "Plumbing",
-    description:
-      "Kitchen tap has been dripping for a week. Need someone to fix or replace the cartridge.",
+    description: "Kitchen tap has been dripping for a week. Need someone to fix or replace the cartridge.",
     country: "Portugal",
     city: "Lisbon",
     area: "Alfama",
@@ -261,8 +234,7 @@ export const SAMPLE_TASKS: Task[] = [
     id: "t3",
     title: "Help moving to new flat",
     category: "Moving",
-    description:
-      "Moving from 2nd floor walk-up to another 2nd floor, 1.5km away. Mostly boxes and furniture. Need strong helpers.",
+    description: "Moving from 2nd floor walk-up to another 2nd floor, 1.5km away. Mostly boxes and furniture. Need strong helpers.",
     country: "Brazil",
     city: "São Paulo",
     area: "Vila Madalena",
@@ -280,12 +252,13 @@ export const SAMPLE_TASKS: Task[] = [
   },
 ];
 
-// ===== SAMPLE BUSINESS JOBS =====
-
-export const BUSINESS_JOBS: BusinessJob[] = [
+// ===== JOBS =====
+export const JOBS: Job[] = [
   {
-    id: "bj1",
+    id: "j1",
     companyId: "c1",
+    companyName: "Shinjuku Grand Hotel",
+    companyLogo: "🏨",
     type: "regular",
     role: "Housekeeping Staff",
     location: "Shinjuku, Tokyo",
@@ -294,40 +267,16 @@ export const BUSINESS_JOBS: BusinessJob[] = [
     employment: "Part-time",
     requirements: ["Housekeeping experience", "Japanese basic", "Reliable"],
     experience: "1+ year",
-    languages: ["Japanese", "English"],
     positions: 5,
     postedHours: 24,
     applicants: 23,
     status: "active",
   },
   {
-    id: "bj2",
-    companyId: "c1",
-    type: "shift",
-    role: "Banquet Server",
-    location: "Shinjuku, Tokyo",
-    pay: "¥1,600/hour",
-    schedule: "Single shift",
-    employment: "Contract",
-    requirements: ["Serving experience", "Presentable", "Punctual"],
-    experience: "6+ months",
-    languages: ["Japanese"],
-    positions: 8,
-    postedHours: 6,
-    applicants: 14,
-    status: "active",
-    date: "Saturday, Dec 14",
-    startTime: "17:00",
-    endTime: "23:00",
-    hourlyRate: 1600,
-    currency: "¥",
-    uniform: "Black suit, white shirt",
-    meal: true,
-    transport: true,
-  },
-  {
-    id: "bj3",
+    id: "j2",
     companyId: "c2",
+    companyName: "Al Fardan Warehouse",
+    companyLogo: "📦",
     type: "crew",
     role: "Warehouse Loader",
     location: "Jebel Ali, Dubai",
@@ -336,7 +285,6 @@ export const BUSINESS_JOBS: BusinessJob[] = [
     employment: "Contract",
     requirements: ["Physical fitness", "Warehouse experience", "ID required"],
     experience: "Any",
-    languages: ["English", "Arabic", "Hindi"],
     positions: 15,
     postedHours: 3,
     applicants: 38,
@@ -344,49 +292,122 @@ export const BUSINESS_JOBS: BusinessJob[] = [
     date: "Tomorrow",
     startTime: "08:00",
     endTime: "17:00",
-    hourlyRate: 35,
-    currency: "AED",
-    uniform: "Safety vest provided",
-    meal: true,
-    transport: true,
+  },
+  {
+    id: "j3",
+    companyId: "c3",
+    companyName: "Café Central",
+    companyLogo: "☕",
+    type: "regular",
+    role: "Barista",
+    location: "Chiado, Lisbon",
+    pay: "€10/hour + tips",
+    schedule: "Morning or afternoon shifts",
+    employment: "Part-time",
+    requirements: ["Coffee experience", "Friendly", "Portuguese or English"],
+    experience: "6+ months",
+    positions: 2,
+    postedHours: 48,
+    applicants: 18,
+    status: "active",
   },
 ];
 
-// ===== SAMPLE COMPANY REVIEWS =====
-
-export const COMPANY_REVIEWS: CompanyReview[] = [
+// ===== CHATS =====
+export const CHATS: Chat[] = [
   {
-    id: "r1",
-    companyId: "c1",
-    workerName: "Yuki T.",
-    workerAvatar: "👩",
-    role: "Housekeeping",
-    date: "2 weeks ago",
-    paymentReliability: 5,
-    jobAccuracy: 5,
-    workEnvironment: 5,
-    communication: 5,
-    safety: 5,
-    comment:
-      "Best hotel I've worked at as temp. Payment always on time, break room is clean, managers are respectful. They even gave me a holiday bonus last year.",
-    verifiedWork: true,
-    communityComments: 12,
-  },
-  {
-    id: "r2",
-    companyId: "c1",
-    workerName: "Min-jun P.",
-    workerAvatar: "👨",
-    role: "Banquet Server",
-    date: "1 month ago",
-    paymentReliability: 5,
-    jobAccuracy: 5,
-    workEnvironment: 4,
-    communication: 5,
-    safety: 5,
-    comment:
-      "Did a banquet shift here. Got paid same day plus transport. Staff meal was excellent. Only minor thing — changing rooms get crowded during peak hours.",
-    verifiedWork: true,
-    communityComments: 8,
+    id: "chat-1",
+    category: "worker-chat",
+    title: "Ahmed Hassan",
+    participants: [
+      { id: "user-1", name: "You", avatar: "👤", type: "user", status: "online" },
+      { id: "w3", name: "Ahmed Hassan", avatar: "👨‍🔧", type: "worker", status: "online" },
+    ],
+    messages: [
+      {
+        id: "msg-1",
+        chatId: "chat-1",
+        senderId: "w3",
+        senderName: "Ahmed Hassan",
+        senderAvatar: "👨‍🔧",
+        senderType: "worker",
+        type: "text",
+        content: "Hi! I've started working on the construction task. I'll have the initial setup ready by tomorrow.",
+        timestamp: "2024-01-17T11:00:00Z",
+        status: "read",
+      },
+      {
+        id: "msg-2",
+        chatId: "chat-1",
+        senderId: "user-1",
+        senderName: "You",
+        senderAvatar: "👤",
+        senderType: "user",
+        type: "text",
+        content: "Great! Can you also handle the electrical work?",
+        timestamp: "2024-01-17T11:05:00Z",
+        status: "read",
+      },
+    ],
+    lastMessage: {
+      id: "msg-2",
+      chatId: "chat-1",
+      senderId: "user-1",
+      senderName: "You",
+      senderAvatar: "👤",
+      senderType: "user",
+      type: "text",
+      content: "Great! Can you also handle the electrical work?",
+      timestamp: "2024-01-17T11:05:00Z",
+      status: "read",
+    },
+    unreadCount: 0,
+    isPinned: false,
+    createdAt: "2024-01-17T11:00:00Z",
+    updatedAt: "2024-01-17T11:05:00Z",
   },
 ];
+
+// ===== NOTIFICATIONS =====
+export const NOTIFICATIONS: Notification[] = [
+  {
+    id: "n1",
+    type: "task",
+    title: "New offer received",
+    message: "Yuki Tanaka sent you an offer for 'Deep clean apartment'",
+    timestamp: "2024-01-15T10:00:00Z",
+    read: false,
+    icon: "🎯",
+  },
+  {
+    id: "n2",
+    type: "message",
+    title: "New message",
+    message: "Ahmed Hassan sent you a message",
+    timestamp: "2024-01-17T11:05:00Z",
+    read: false,
+    icon: "💬",
+  },
+  {
+    id: "n3",
+    type: "payment",
+    title: "Payment processed",
+    message: "Payment of ¥18,000 has been processed",
+    timestamp: "2024-01-16T14:00:00Z",
+    read: true,
+    icon: "💰",
+  },
+];
+
+// ===== UTILITIES =====
+export function formatAgo(hours: number): string {
+  if (hours < 1) return "just now";
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "yesterday";
+  return `${days}d ago`;
+}
+
+export function formatCurrency(amount: number, currency: string): string {
+  return `${currency}${amount.toLocaleString()}`;
+}
