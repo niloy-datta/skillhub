@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { HomePage } from '../pages/Home';
 import { FindWorkPage } from '../pages/FindWork';
 import { HireTalentPage } from '../pages/HireTalent';
@@ -12,7 +12,7 @@ import { NotFoundPage } from '../pages/NotFound';
 
 export function AppRouter() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/find-work" element={<FindWorkPage />} />
@@ -25,6 +25,6 @@ export function AppRouter() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
