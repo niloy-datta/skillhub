@@ -33,12 +33,37 @@ import {
   WorkerAvatar,
 } from "./components/Icons";
 import { WorkerMap, TaskMap, CompanyMap } from "./components/Map";
-import { HomePage } from "./components/pages/HomePage";
-import { MissionCompilerPage } from "./components/pages/MissionCompilerPage";
-import { ExecutionDashboard } from "./components/pages/ExecutionDashboard";
+import { lazy, Suspense } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ErrorBoundary } from "./components/ui/ErrorBoundary";
+
+// Lazy load pages for code splitting
+const HomePage = lazy(() => import("./components/pages/HomePage").then(m => ({ default: m.HomePage })));
+const MissionCompilerPage = lazy(() => import("./components/pages/MissionCompilerPage").then(m => ({ default: m.MissionCompilerPage })));
+const ExecutionDashboard = lazy(() => import("./components/pages/ExecutionDashboard").then(m => ({ default: m.ExecutionDashboard })));
+const LoginPage = lazy(() => import("./components/pages/LoginPage").then(m => ({ default: m.LoginPage })));
+const RegisterPage = lazy(() => import("./components/pages/RegisterPage").then(m => ({ default: m.RegisterPage })));
+const SettingsPage = lazy(() => import("./components/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
+const NotFoundPage = lazy(() => import("./components/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+
+// Loading component
+function PageLoader() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-midnight via-charcoal to-midnight">
+      <div className="text-center">
+        <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-indigo"></div>
+        <p className="text-white/60">Loading...</p>
+      </div>
+    </div>
+  );
+}
 
 type View =
   | "home"
+  | "login"
+  | "register"
+  | "forgot-password"
+  | "settings"
   | "mission-compiler"
   | "execution-dashboard"
   | "outcome-graph"
@@ -70,9 +95,20 @@ type View =
   | "language"
   | "forecasting"
   | "trends"
-  | "insights";
+  | "insights"
+  | "404";
 
 export default function App() {
+  return (
+    <ErrorBoundary>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ErrorBoundary>
+  );
+}
+
+function AppContent() {
   const [view, setView] = useState<View>("home");
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
@@ -127,9 +163,15 @@ export default function App() {
       <Nav view={view} navigate={navigate} savedCount={savedWorkers.size + savedTasks.size} unreadNotifications={unreadNotifications} darkMode={darkMode} setDarkMode={setDarkMode} />
       <Toast toast={toast} />
       <main>
-        {view === "home" && <HomePage onNavigate={navigate} />}
-        {view === "mission-compiler" && <MissionCompilerPage onNavigate={navigate} />}
-        {view === "execution-dashboard" && <ExecutionDashboard onNavigate={navigate} />}
+        <Suspense fallback={<PageLoader />}>
+          {view === "home" && <HomePage onNavigate={navigate} />}
+          {view === "login" && <LoginPage onNavigate={navigate} />}
+          {view === "register" && <RegisterPage onNavigate={navigate} />}
+          {view === "settings" && <SettingsPage onNavigate={navigate} />}
+          {view === "mission-compiler" && <MissionCompilerPage onNavigate={navigate} />}
+          {view === "execution-dashboard" && <ExecutionDashboard onNavigate={navigate} />}
+          {view === "404" && <NotFoundPage onNavigate={navigate} />}
+        </Suspense>
         {view === "get-help" && <GetHelp navigate={navigate} setSelectedTask={setSelectedTask} savedTasks={savedTasks} toggleSaveTask={toggleSaveTask} />}
         {view === "post-task" && <PostTask navigate={navigate} showToast={showToast} />}
         {view === "task-detail" && selectedTask && <TaskDetail task={selectedTask} navigate={navigate} showToast={showToast} />}
