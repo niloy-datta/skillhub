@@ -39,16 +39,6 @@ export interface Toast {
   type: ToastType;
 }
 
-// ===== NAVIGATION TYPES =====
-
-export interface NavItem {
-  label: string;
-  view: View;
-  icon: string;
-}
-
-// ===== WORKER TYPES =====
-
 export type WorkerSkill =
   | "House Cleaning"
   | "Deep Cleaning"
@@ -100,8 +90,6 @@ export interface Worker {
   responseTime: string;
 }
 
-// ===== COMPANY TYPES =====
-
 export interface Company {
   id: string;
   name: string;
@@ -126,8 +114,6 @@ export interface Company {
   perks: string[];
   hue: number;
 }
-
-// ===== TASK TYPES =====
 
 export type TaskCategory =
   | "Cleaning"
@@ -164,8 +150,6 @@ export interface Task {
   clientName: string;
 }
 
-// ===== BUSINESS JOB TYPES =====
-
 export interface BusinessJob {
   id: string;
   companyId: string;
@@ -192,8 +176,6 @@ export interface BusinessJob {
   transport?: boolean;
 }
 
-// ===== REVIEW TYPES =====
-
 export interface CompanyReview {
   id: string;
   companyId: string;
@@ -211,19 +193,8 @@ export interface CompanyReview {
   communityComments: number;
 }
 
-// ===== COMPONENT PROP TYPES =====
-
-export interface NavigateProps {
-  navigate: (view: View) => void;
-}
-
-export interface ToastProps {
-  showToast: (message: string, type?: ToastType) => void;
-}
-
-export interface SavedProps {
-  savedWorkers: Set<string>;
-  savedTasks: Set<string>;
-  toggleSaveWorker: (id: string) => void;
-  toggleSaveTask: (id: string) => void;
+export interface NavItem {
+  label: string;
+  view: View;
+  icon: string;
 }
