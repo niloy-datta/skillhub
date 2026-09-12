@@ -33,9 +33,15 @@ import {
   WorkerAvatar,
 } from "./components/Icons";
 import { WorkerMap, TaskMap, CompanyMap } from "./components/Map";
+import { HomePage } from "./components/pages/HomePage";
+import { MissionCompilerPage } from "./components/pages/MissionCompilerPage";
+import { ExecutionDashboard } from "./components/pages/ExecutionDashboard";
 
 type View =
   | "home"
+  | "mission-compiler"
+  | "execution-dashboard"
+  | "outcome-graph"
   | "get-help"
   | "post-task"
   | "task-detail"
@@ -121,7 +127,9 @@ export default function App() {
       <Nav view={view} navigate={navigate} savedCount={savedWorkers.size + savedTasks.size} unreadNotifications={unreadNotifications} darkMode={darkMode} setDarkMode={setDarkMode} />
       <Toast toast={toast} />
       <main>
-        {view === "home" && <Home navigate={navigate} />}
+        {view === "home" && <HomePage onNavigate={navigate} />}
+        {view === "mission-compiler" && <MissionCompilerPage onNavigate={navigate} />}
+        {view === "execution-dashboard" && <ExecutionDashboard onNavigate={navigate} />}
         {view === "get-help" && <GetHelp navigate={navigate} setSelectedTask={setSelectedTask} savedTasks={savedTasks} toggleSaveTask={toggleSaveTask} />}
         {view === "post-task" && <PostTask navigate={navigate} showToast={showToast} />}
         {view === "task-detail" && selectedTask && <TaskDetail task={selectedTask} navigate={navigate} showToast={showToast} />}
@@ -191,6 +199,8 @@ function Nav({ view, navigate, savedCount, unreadNotifications, darkMode, setDar
 
           <nav className="hidden items-center gap-2 md:flex">
             {[
+              { label: "Mission Compiler", view: "mission-compiler" as View },
+              { label: "Execution", view: "execution-dashboard" as View },
               { label: "Get Help", view: "get-help" as View },
               { label: "Hire People", view: "hire-people" as View },
               { label: "Find Workers", view: "find-workers" as View },
@@ -290,6 +300,8 @@ function Nav({ view, navigate, savedCount, unreadNotifications, darkMode, setDar
         <div className="fixed inset-0 z-40 bg-midnight/98 pt-20 md:hidden">
           <nav className="flex flex-col gap-2 p-6">
             {[
+              { label: "Mission Compiler", view: "mission-compiler" as View, icon: "🧠" },
+              { label: "Execution Dashboard", view: "execution-dashboard" as View, icon: "⚡" },
               { label: "Get Help", view: "get-help" as View, icon: "🛠️" },
               { label: "Hire People", view: "hire-people" as View, icon: "🏢" },
               { label: "Find Workers", view: "find-workers" as View, icon: "👥" },
