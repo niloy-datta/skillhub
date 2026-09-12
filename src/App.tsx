@@ -43,7 +43,13 @@ type View =
   | "find-workers"
   | "worker-profile"
   | "company-profile"
-  | "business-workspace";
+  | "business-workspace"
+  | "my-profile"
+  | "messages"
+  | "notifications"
+  | "analytics"
+  | "payments"
+  | "help-center";
 
 export default function App() {
   const [view, setView] = useState<View>("home");
@@ -53,6 +59,7 @@ export default function App() {
   const [savedWorkers, setSavedWorkers] = useState<Set<string>>(new Set());
   const [savedTasks, setSavedTasks] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
+  const [unreadNotifications, setUnreadNotifications] = useState(3);
 
   const navigate = (v: View) => {
     setView(v);
@@ -95,7 +102,7 @@ export default function App() {
   return (
     <div id="top" className="min-h-screen bg-cream">
       <div className="noise-layer" aria-hidden="true" />
-      <Nav view={view} navigate={navigate} savedCount={savedWorkers.size + savedTasks.size} />
+      <Nav view={view} navigate={navigate} savedCount={savedWorkers.size + savedTasks.size} unreadNotifications={unreadNotifications} />
       <Toast toast={toast} />
       <main>
         {view === "home" && <Home navigate={navigate} />}
@@ -108,6 +115,12 @@ export default function App() {
         {view === "worker-profile" && selectedWorker && <WorkerProfile worker={selectedWorker} navigate={navigate} saved={savedWorkers.has(selectedWorker.id)} toggleSave={() => toggleSaveWorker(selectedWorker.id)} showToast={showToast} />}
         {view === "company-profile" && selectedCompany && <CompanyProfile company={selectedCompany} navigate={navigate} />}
         {view === "business-workspace" && <BusinessWorkspace navigate={navigate} showToast={showToast} />}
+        {view === "my-profile" && <MyProfile navigate={navigate} showToast={showToast} />}
+        {view === "messages" && <Messages navigate={navigate} showToast={showToast} />}
+        {view === "notifications" && <Notifications navigate={navigate} unreadCount={unreadNotifications} setUnreadCount={setUnreadNotifications} />}
+        {view === "analytics" && <Analytics navigate={navigate} />}
+        {view === "payments" && <Payments navigate={navigate} showToast={showToast} />}
+        {view === "help-center" && <HelpCenter navigate={navigate} />}
       </main>
       <Footer navigate={navigate} />
     </div>
@@ -132,7 +145,7 @@ function Toast({ toast }: { toast: { message: string; type: "success" | "error" 
 }
 
 // ===== NAVIGATION =====
-function Nav({ view, navigate, savedCount }: { view: View; navigate: (v: View) => void; savedCount: number }) {
+function Nav({ view, navigate, savedCount, unreadNotifications }: { view: View; navigate: (v: View) => void; savedCount: number; unreadNotifications: number }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -173,6 +186,39 @@ function Nav({ view, navigate, savedCount }: { view: View; navigate: (v: View) =
               </span>
             )}
             <button
+              onClick={() => navigate("messages")}
+              className="hidden rounded-full bg-white/10 p-2.5 text-white transition-all hover:bg-white/20 md:block"
+              aria-label="Messages"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => navigate("notifications")}
+              className="relative rounded-full bg-white/10 p-2.5 text-white transition-all hover:bg-white/20"
+              aria-label="Notifications"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              {unreadNotifications > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose text-xs font-bold text-white">
+                  {unreadNotifications}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => navigate("my-profile")}
+              className="hidden rounded-full bg-gradient-to-r from-indigo to-violet p-0.5 transition-all hover:scale-105 md:block"
+              aria-label="Profile"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-midnight text-sm font-bold text-white">
+                JD
+              </span>
+            </button>
+            <button
               onClick={() => navigate("post-task")}
               className="rounded-full bg-gradient-to-r from-indigo to-violet px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
             >
@@ -204,6 +250,10 @@ function Nav({ view, navigate, savedCount }: { view: View; navigate: (v: View) =
               { label: "Post Task", view: "post-task" as View, icon: "📝" },
               { label: "Post Job", view: "post-job" as View, icon: "💼" },
               { label: "Business Workspace", view: "business-workspace" as View, icon: "📊" },
+              { label: "My Profile", view: "my-profile" as View, icon: "👤" },
+              { label: "Messages", view: "messages" as View, icon: "💬" },
+              { label: "Notifications", view: "notifications" as View, icon: "🔔" },
+              { label: "Analytics", view: "analytics" as View, icon: "📈" },
             ].map((item) => (
               <button
                 key={item.view}
@@ -1956,12 +2006,950 @@ function BusinessWorkspace({ navigate, showToast }: { navigate: (v: View) => voi
   );
 }
 
+// ===== MY PROFILE =====
+function MyProfile({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [activeTab, setActiveTab] = useState<"overview" | "tasks" | "jobs" | "reviews" | "settings">("overview");
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          {/* Profile Header */}
+          <div className="rounded-3xl bg-gradient-to-br from-indigo via-violet to-amber p-8 text-white shadow-2xl md:p-10">
+            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/20 text-4xl font-bold backdrop-blur-sm">
+                JD
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  <h1 className="font-display text-3xl font-black md:text-4xl">John Doe</h1>
+                  <span className="rounded-full bg-emerald/20 px-3 py-1 font-mono text-xs font-semibold text-emerald backdrop-blur-sm">
+                    ✓ Verified
+                  </span>
+                </div>
+                <p className="mt-2 font-mono text-white/80">john.doe@email.com · Member since 2024</p>
+                <div className="mt-4 flex flex-wrap gap-3 font-mono text-sm">
+                  <span className="rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">📍 Tokyo, Japan</span>
+                  <span className="rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">⭐ 4.9 rating</span>
+                  <span className="rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">✓ 23 tasks completed</span>
+                </div>
+              </div>
+              <button
+                onClick={() => showToast("Profile updated!", "success")}
+                className="rounded-full bg-white px-6 py-3 font-semibold text-midnight shadow-lg transition-all hover:scale-105"
+              >
+                Edit Profile
+              </button>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Tabs */}
+        <Reveal delay={100}>
+          <div className="mt-8 flex gap-2 overflow-x-auto rounded-2xl border-2 border-midnight/10 bg-white p-2">
+            {[
+              { id: "overview" as const, label: "Overview", icon: "📊" },
+              { id: "tasks" as const, label: "My Tasks", icon: "📝" },
+              { id: "jobs" as const, label: "My Jobs", icon: "💼" },
+              { id: "reviews" as const, label: "Reviews", icon: "⭐" },
+              { id: "settings" as const, label: "Settings", icon: "⚙️" },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`flex shrink-0 items-center gap-2 rounded-xl px-5 py-3 font-semibold transition-all ${
+                  activeTab === t.id
+                    ? "bg-gradient-to-r from-indigo to-violet text-white shadow-lg"
+                    : "text-midnight/60 hover:bg-mist"
+                }`}
+              >
+                <span>{t.icon}</span>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            {activeTab === "overview" && (
+              <div>
+                <h2 className="font-display text-2xl font-bold">Your Activity</h2>
+                <div className="mt-6 grid gap-6 md:grid-cols-4">
+                  {[
+                    { label: "Tasks Posted", value: "12", icon: "📝", color: "from-indigo to-violet" },
+                    { label: "Tasks Completed", value: "23", icon: "✓", color: "from-emerald to-indigo" },
+                    { label: "Workers Hired", value: "18", icon: "👥", color: "from-amber to-violet" },
+                    { label: "Total Spent", value: "¥285k", icon: "💰", color: "from-violet to-amber" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="rounded-2xl bg-cream p-5 text-center">
+                      <div className={`mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br ${stat.color} text-xl`}>
+                        {stat.icon}
+                      </div>
+                      <p className="font-display text-3xl font-black">{stat.value}</p>
+                      <p className="mt-1 font-mono text-xs text-midnight/60">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-8">
+                  <h3 className="font-display text-xl font-bold">Recent Activity</h3>
+                  <div className="mt-4 space-y-3">
+                    {[
+                      { action: "Posted task", detail: "Deep clean 2-bedroom apartment", time: "2 hours ago", icon: "📝" },
+                      { action: "Hired worker", detail: "Yuki Tanaka for cleaning task", time: "Yesterday", icon: "✓" },
+                      { action: "Left review", detail: "5★ for Ahmed Hassan", time: "3 days ago", icon: "⭐" },
+                      { action: "Saved worker", detail: "Maria Silva added to saved", time: "1 week ago", icon: "💾" },
+                    ].map((activity, i) => (
+                      <div key={i} className="flex items-center gap-4 rounded-2xl border border-midnight/10 bg-cream p-4">
+                        <span className="text-2xl">{activity.icon}</span>
+                        <div className="flex-1">
+                          <p className="font-semibold">{activity.action}</p>
+                          <p className="text-sm text-midnight/60">{activity.detail}</p>
+                        </div>
+                        <span className="font-mono text-xs text-midnight/40">{activity.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "tasks" && (
+              <div>
+                <h2 className="font-display text-2xl font-bold">My Tasks</h2>
+                <div className="mt-6 space-y-4">
+                  {SAMPLE_TASKS.slice(0, 3).map((task) => (
+                    <div key={task.id} className="rounded-2xl border border-midnight/10 bg-cream p-5">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <span className="rounded-full bg-indigo/10 px-3 py-1 font-mono text-xs font-semibold text-indigo">
+                            {task.category}
+                          </span>
+                          <h3 className="mt-2 font-display text-lg font-bold">{task.title}</h3>
+                          <p className="mt-1 font-mono text-sm text-midnight/60">{task.city} · {task.date}</p>
+                        </div>
+                        <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                          Active
+                        </span>
+                      </div>
+                      <div className="mt-4 flex items-center justify-between">
+                        <p className="font-display text-xl font-bold">{task.currency}{task.budget.toLocaleString()}</p>
+                        <p className="font-mono text-sm text-midnight/60">{task.offersCount} offers</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "jobs" && (
+              <div>
+                <h2 className="font-display text-2xl font-bold">My Jobs</h2>
+                <div className="mt-6 space-y-4">
+                  {BUSINESS_JOBS.slice(0, 3).map((job) => (
+                    <div key={job.id} className="rounded-2xl border border-midnight/10 bg-cream p-5">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <span className="rounded-full bg-amber/10 px-3 py-1 font-mono text-xs font-semibold text-amber">
+                            {job.type}
+                          </span>
+                          <h3 className="mt-2 font-display text-lg font-bold">{job.role}</h3>
+                          <p className="mt-1 font-mono text-sm text-midnight/60">{job.location}</p>
+                        </div>
+                        <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                          Active
+                        </span>
+                      </div>
+                      <div className="mt-4 flex items-center justify-between">
+                        <p className="font-display text-xl font-bold">{job.pay}</p>
+                        <p className="font-mono text-sm text-midnight/60">{job.applicants} applicants</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "reviews" && (
+              <div>
+                <h2 className="font-display text-2xl font-bold">Reviews</h2>
+                <p className="mt-3 text-midnight/60">Reviews you've received from workers</p>
+                <div className="mt-6 space-y-4">
+                  {WORKERS.slice(0, 3).map((worker) => (
+                    <div key={worker.id} className="rounded-2xl border border-midnight/10 bg-cream p-5">
+                      <div className="flex items-start gap-4">
+                        <WorkerAvatar worker={worker} size="sm" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold">{worker.name}</p>
+                            <div className="flex gap-0.5">
+                              {[1, 2, 3, 4, 5].map((s) => (
+                                <IconStar key={s} className="h-4 w-4 text-amber" />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="mt-2 text-sm text-midnight/70">"Great client! Clear instructions and prompt payment. Would love to work again."</p>
+                          <p className="mt-2 font-mono text-xs text-midnight/40">2 weeks ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "settings" && (
+              <div>
+                <h2 className="font-display text-2xl font-bold">Settings</h2>
+                <div className="mt-6 space-y-6">
+                  <div>
+                    <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      defaultValue="john.doe@email.com"
+                      className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      defaultValue="+81 90-1234-5678"
+                      className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                      Notifications
+                    </label>
+                    <div className="space-y-3">
+                      {["Email notifications", "SMS notifications", "Push notifications", "Marketing emails"].map((opt) => (
+                        <label key={opt} className="flex items-center gap-3">
+                          <input type="checkbox" defaultChecked className="h-5 w-5 rounded" />
+                          <span className="text-midnight/70">{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => showToast("Settings saved!", "success")}
+                    className="rounded-2xl bg-gradient-to-r from-indigo to-violet px-8 py-3 font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== MESSAGES =====
+function Messages({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [selectedChat, setSelectedChat] = useState<string | null>("w2");
+  const [newMessage, setNewMessage] = useState("");
+
+  const conversations = [
+    { id: "w2", worker: WORKERS[1], lastMessage: "Thanks for the opportunity! Let me know if you need anything else.", time: "2m", unread: 2 },
+    { id: "w1", worker: WORKERS[0], lastMessage: "I can start tomorrow at 9am. Does that work?", time: "1h", unread: 0 },
+    { id: "w4", worker: WORKERS[3], lastMessage: "Perfect, I'll bring my own supplies.", time: "3h", unread: 1 },
+    { id: "w6", worker: WORKERS[5], lastMessage: "Looking forward to working with you!", time: "1d", unread: 0 },
+  ];
+
+  const messages = [
+    { from: "them", text: "Hi! I saw your task for deep cleaning. I'm available tomorrow.", time: "10:30 AM" },
+    { from: "me", text: "Great! What time works for you?", time: "10:32 AM" },
+    { from: "them", text: "I can start at 9am and should finish by 3pm. Does that work?", time: "10:35 AM" },
+    { from: "me", text: "Perfect! 9am works great. Will you bring your own supplies?", time: "10:38 AM" },
+    { from: "them", text: "Yes, I bring all my own eco-friendly supplies. I specialize in deep cleaning.", time: "10:40 AM" },
+    { from: "me", text: "Excellent! I'll confirm the booking now.", time: "10:42 AM" },
+    { from: "them", text: "Thanks for the opportunity! Let me know if you need anything else.", time: "10:45 AM" },
+  ];
+
+  const sendMessage = () => {
+    if (newMessage.trim()) {
+      showToast("Message sent!", "success");
+      setNewMessage("");
+    }
+  };
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Messages</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Your conversations</h1>
+          </div>
+        </Reveal>
+
+        <Reveal delay={100}>
+          <div className="grid gap-6 lg:grid-cols-[350px_1fr]">
+            {/* Conversations list */}
+            <div className="rounded-3xl border-2 border-midnight/10 bg-white shadow-xl">
+              <div className="border-b border-midnight/10 p-5">
+                <div className="flex items-center gap-3 rounded-2xl bg-cream px-4 py-3">
+                  <IconSearch className="h-5 w-5 text-midnight/40" />
+                  <input
+                    type="text"
+                    placeholder="Search conversations..."
+                    className="w-full bg-transparent outline-none placeholder:text-midnight/40"
+                  />
+                </div>
+              </div>
+              <div className="max-h-[600px] overflow-y-auto">
+                {conversations.map((conv) => (
+                  <button
+                    key={conv.id}
+                    onClick={() => setSelectedChat(conv.id)}
+                    className={`flex w-full items-center gap-4 border-b border-midnight/5 p-4 text-left transition-all hover:bg-cream ${
+                      selectedChat === conv.id ? "bg-indigo/5" : ""
+                    }`}
+                  >
+                    <div className="relative">
+                      <WorkerAvatar worker={conv.worker} size="sm" />
+                      {conv.unread > 0 && (
+                        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-indigo text-xs font-bold text-white">
+                          {conv.unread}
+                        </span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold">{conv.worker.name}</p>
+                        <span className="font-mono text-xs text-midnight/40">{conv.time}</span>
+                      </div>
+                      <p className="mt-0.5 truncate text-sm text-midnight/60">{conv.lastMessage}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Chat area */}
+            <div className="flex flex-col rounded-3xl border-2 border-midnight/10 bg-white shadow-xl">
+              {/* Chat header */}
+              <div className="flex items-center gap-4 border-b border-midnight/10 p-5">
+                {selectedChat && (
+                  <>
+                    <WorkerAvatar worker={conversations.find((c) => c.id === selectedChat)?.worker || WORKERS[0]} />
+                    <div>
+                      <p className="font-display font-bold">{conversations.find((c) => c.id === selectedChat)?.worker.name}</p>
+                      <p className="font-mono text-xs text-emerald">● Online</p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Messages */}
+              <div className="flex-1 space-y-4 overflow-y-auto p-6" style={{ maxHeight: "400px" }}>
+                {messages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.from === "me" ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[70%] rounded-2xl px-5 py-3 ${
+                      msg.from === "me"
+                        ? "bg-gradient-to-r from-indigo to-violet text-white"
+                        : "bg-cream text-midnight"
+                    }`}>
+                      <p>{msg.text}</p>
+                      <p className={`mt-1 font-mono text-[10px] ${msg.from === "me" ? "text-white/60" : "text-midnight/40"}`}>
+                        {msg.time}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Message input */}
+              <div className="border-t border-midnight/10 p-4">
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                    placeholder="Type a message..."
+                    className="flex-1 rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  />
+                  <button
+                    onClick={sendMessage}
+                    className="rounded-2xl bg-gradient-to-r from-indigo to-violet px-6 py-3 font-semibold text-white shadow-lg transition-all hover:scale-105"
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== NOTIFICATIONS =====
+function Notifications({ navigate, unreadCount, setUnreadCount }: { navigate: (v: View) => void; unreadCount: number; setUnreadCount: (n: number) => void }) {
+  const [filter, setFilter] = useState<"all" | "unread" | "tasks" | "jobs">("all");
+
+  const notifications = [
+    { id: 1, type: "task", title: "New offer received", message: "Yuki Tanaka sent you an offer for 'Deep clean apartment'", time: "2m ago", read: false, icon: "💼" },
+    { id: 2, type: "job", title: "New applicant", message: "Rahim Uddin applied for your 'Warehouse Worker' position", time: "1h ago", read: false, icon: "👤" },
+    { id: 3, type: "task", title: "Task completed", message: "Your cleaning task was completed successfully", time: "3h ago", read: false, icon: "✓" },
+    { id: 4, type: "system", title: "Payment received", message: "¥18,000 has been transferred to Yuki Tanaka", time: "1d ago", read: true, icon: "💰" },
+    { id: 5, type: "review", title: "New review", message: "Ahmed Hassan left you a 5-star review", time: "2d ago", read: true, icon: "⭐" },
+    { id: 6, type: "job", title: "Shift reminder", message: "Your shift at Shinjuku Grand Hotel starts in 2 hours", time: "3d ago", read: true, icon: "⏰" },
+  ];
+
+  const filtered = filter === "all" ? notifications : filter === "unread" ? notifications.filter((n) => !n.read) : notifications.filter((n) => n.type === filter);
+
+  const markAllRead = () => {
+    setUnreadCount(0);
+  };
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-4xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+            <div>
+              <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Notifications</p>
+              <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Stay updated</h1>
+            </div>
+            <button
+              onClick={markAllRead}
+              className="rounded-full border-2 border-midnight/20 px-5 py-2.5 font-semibold text-midnight transition-all hover:bg-mist"
+            >
+              Mark all as read
+            </button>
+          </div>
+        </Reveal>
+
+        <Reveal delay={100}>
+          <div className="mb-6 flex gap-2 overflow-x-auto rounded-2xl border-2 border-midnight/10 bg-white p-2">
+            {[
+              { id: "all" as const, label: "All", count: notifications.length },
+              { id: "unread" as const, label: "Unread", count: unreadCount },
+              { id: "tasks" as const, label: "Tasks", count: notifications.filter((n) => n.type === "task").length },
+              { id: "jobs" as const, label: "Jobs", count: notifications.filter((n) => n.type === "job").length },
+            ].map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setFilter(f.id)}
+                className={`flex shrink-0 items-center gap-2 rounded-xl px-5 py-3 font-semibold transition-all ${
+                  filter === f.id
+                    ? "bg-gradient-to-r from-indigo to-violet text-white shadow-lg"
+                    : "text-midnight/60 hover:bg-mist"
+                }`}
+              >
+                {f.label}
+                <span className={`rounded-full px-2 py-0.5 text-xs ${filter === f.id ? "bg-white/20" : "bg-mist"}`}>
+                  {f.count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal delay={150}>
+          <div className="space-y-3">
+            {filtered.map((notif) => (
+              <div
+                key={notif.id}
+                className={`flex items-start gap-4 rounded-2xl border-2 p-5 transition-all ${
+                  notif.read
+                    ? "border-midnight/10 bg-white"
+                    : "border-indigo/30 bg-indigo/5"
+                }`}
+              >
+                <span className="text-2xl">{notif.icon}</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-display font-bold">{notif.title}</p>
+                    {!notif.read && (
+                      <span className="h-2 w-2 rounded-full bg-indigo" />
+                    )}
+                  </div>
+                  <p className="mt-1 text-sm text-midnight/70">{notif.message}</p>
+                  <p className="mt-2 font-mono text-xs text-midnight/40">{notif.time}</p>
+                </div>
+                {!notif.read && (
+                  <button
+                    onClick={() => setUnreadCount(Math.max(0, unreadCount - 1))}
+                    className="rounded-full border border-midnight/20 px-3 py-1.5 font-mono text-xs text-midnight/60 hover:bg-mist"
+                  >
+                    Mark read
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== ANALYTICS =====
+function Analytics({ navigate }: { navigate: (v: View) => void }) {
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Analytics</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Your performance</h1>
+            <p className="mt-3 text-lg text-midnight/60">Track your hiring activity and spending</p>
+          </div>
+        </Reveal>
+
+        {/* Stats cards */}
+        <Reveal delay={100}>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { label: "Total Spent", value: "¥285,400", change: "+12%", icon: "💰", gradient: "from-indigo to-violet" },
+              { label: "Tasks Posted", value: "12", change: "+3", icon: "📝", gradient: "from-violet to-amber" },
+              { label: "Workers Hired", value: "18", change: "+5", icon: "👥", gradient: "from-amber to-emerald" },
+              { label: "Avg. Rating", value: "4.9", change: "+0.1", icon: "⭐", gradient: "from-emerald to-indigo" },
+            ].map((stat, i) => (
+              <Reveal key={stat.label} delay={150 + i * 50}>
+                <div className="rounded-3xl border-2 border-midnight/10 bg-white p-6 shadow-xl">
+                  <div className="flex items-start justify-between">
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${stat.gradient} text-xl`}>
+                      {stat.icon}
+                    </div>
+                    <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                      {stat.change}
+                    </span>
+                  </div>
+                  <p className="mt-4 font-display text-3xl font-black">{stat.value}</p>
+                  <p className="mt-1 font-mono text-sm text-midnight/60">{stat.label}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Charts placeholder */}
+        <Reveal delay={300}>
+          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+            <div className="rounded-3xl border-2 border-midnight/10 bg-white p-6 shadow-xl">
+              <h3 className="font-display text-xl font-bold">Spending Overview</h3>
+              <p className="mt-1 font-mono text-sm text-midnight/60">Last 6 months</p>
+              <div className="mt-6 flex h-48 items-end justify-between gap-2">
+                {[40, 65, 45, 80, 60, 90].map((h, i) => (
+                  <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                    <div
+                      className="w-full rounded-t-xl bg-gradient-to-t from-indigo to-violet transition-all hover:opacity-80"
+                      style={{ height: `${h}%` }}
+                    />
+                    <span className="font-mono text-xs text-midnight/40">
+                      {["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][i]}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border-2 border-midnight/10 bg-white p-6 shadow-xl">
+              <h3 className="font-display text-xl font-bold">Task Categories</h3>
+              <p className="mt-1 font-mono text-sm text-midnight/60">Distribution</p>
+              <div className="mt-6 space-y-4">
+                {[
+                  { label: "Cleaning", percent: 40, color: "bg-indigo" },
+                  { label: "Plumbing", percent: 25, color: "bg-violet" },
+                  { label: "Moving", percent: 20, color: "bg-amber" },
+                  { label: "Other", percent: 15, color: "bg-emerald" },
+                ].map((cat) => (
+                  <div key={cat.label}>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{cat.label}</span>
+                      <span className="font-mono text-sm text-midnight/60">{cat.percent}%</span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-mist">
+                      <div className={`h-full rounded-full ${cat.color}`} style={{ width: `${cat.percent}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Recent activity */}
+        <Reveal delay={400}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-6 shadow-xl">
+            <h3 className="font-display text-xl font-bold">Recent Transactions</h3>
+            <div className="mt-6 space-y-3">
+              {[
+                { desc: "Payment to Yuki Tanaka", amount: "-¥18,000", date: "Dec 10, 2024", status: "Completed" },
+                { desc: "Payment to Ahmed Hassan", amount: "-¥12,500", date: "Dec 8, 2024", status: "Completed" },
+                { desc: "Payment to Maria Silva", amount: "-¥8,000", date: "Dec 5, 2024", status: "Completed" },
+                { desc: "Refund from cancelled task", amount: "+¥5,000", date: "Dec 3, 2024", status: "Refunded" },
+              ].map((tx, i) => (
+                <div key={i} className="flex items-center justify-between rounded-2xl border border-midnight/10 bg-cream p-4">
+                  <div>
+                    <p className="font-semibold">{tx.desc}</p>
+                    <p className="font-mono text-xs text-midnight/50">{tx.date}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-display font-bold ${tx.amount.startsWith("+") ? "text-emerald" : "text-midnight"}`}>
+                      {tx.amount}
+                    </p>
+                    <p className="font-mono text-xs text-midnight/50">{tx.status}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== PAYMENTS =====
+function Payments({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [activeTab, setActiveTab] = useState<"overview" | "transactions" | "methods" | "invoices">("overview");
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Payments</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Manage your payments</h1>
+          </div>
+        </Reveal>
+
+        {/* Balance card */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl bg-gradient-to-br from-indigo via-violet to-amber p-8 text-white shadow-2xl md:p-10">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="font-mono text-sm uppercase tracking-[0.2em] text-white/70">Available Balance</p>
+                <p className="mt-2 font-display text-5xl font-black md:text-6xl">¥285,400</p>
+                <p className="mt-2 font-mono text-sm text-white/70">Last updated: 2 minutes ago</p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => showToast("Withdrawal initiated!", "success")}
+                  className="rounded-full bg-white px-6 py-3 font-semibold text-midnight shadow-lg transition-all hover:scale-105"
+                >
+                  Withdraw Funds
+                </button>
+                <button
+                  onClick={() => showToast("Top-up initiated!", "success")}
+                  className="rounded-full border-2 border-white/30 bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20"
+                >
+                  Add Funds
+                </button>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Tabs */}
+        <Reveal delay={150}>
+          <div className="mt-8 flex gap-2 overflow-x-auto rounded-2xl border-2 border-midnight/10 bg-white p-2">
+            {[
+              { id: "overview" as const, label: "Overview", icon: "📊" },
+              { id: "transactions" as const, label: "Transactions", icon: "💳" },
+              { id: "methods" as const, label: "Payment Methods", icon: "🏦" },
+              { id: "invoices" as const, label: "Invoices", icon: "📄" },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`flex shrink-0 items-center gap-2 rounded-xl px-5 py-3 font-semibold transition-all ${
+                  activeTab === t.id
+                    ? "bg-gradient-to-r from-indigo to-violet text-white shadow-lg"
+                    : "text-midnight/60 hover:bg-mist"
+                }`}
+              >
+                <span>{t.icon}</span>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal delay={200}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            {activeTab === "overview" && (
+              <div>
+                <div className="grid gap-6 md:grid-cols-3">
+                  {[
+                    { label: "Total Spent", value: "¥285,400", icon: "💸", color: "from-indigo to-violet" },
+                    { label: "Pending", value: "¥12,500", icon: "⏳", color: "from-amber to-violet" },
+                    { label: "This Month", value: "¥45,200", icon: "📅", color: "from-emerald to-indigo" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="rounded-2xl bg-cream p-5 text-center">
+                      <div className={`mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br ${stat.color} text-xl`}>
+                        {stat.icon}
+                      </div>
+                      <p className="font-display text-3xl font-black">{stat.value}</p>
+                      <p className="mt-1 font-mono text-xs text-midnight/60">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-8">
+                  <h3 className="font-display text-xl font-bold">Recent Activity</h3>
+                  <div className="mt-4 space-y-3">
+                    {[
+                      { desc: "Payment to Yuki Tanaka", amount: "-¥18,000", date: "Dec 10", status: "Completed" },
+                      { desc: "Payment to Ahmed Hassan", amount: "-¥12,500", date: "Dec 8", status: "Completed" },
+                      { desc: "Refund received", amount: "+¥5,000", date: "Dec 5", status: "Refunded" },
+                    ].map((tx, i) => (
+                      <div key={i} className="flex items-center justify-between rounded-2xl border border-midnight/10 bg-cream p-4">
+                        <div>
+                          <p className="font-semibold">{tx.desc}</p>
+                          <p className="font-mono text-xs text-midnight/50">{tx.date}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className={`font-display font-bold ${tx.amount.startsWith("+") ? "text-emerald" : "text-midnight"}`}>
+                            {tx.amount}
+                          </p>
+                          <p className="font-mono text-xs text-midnight/50">{tx.status}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "transactions" && (
+              <div>
+                <h3 className="font-display text-xl font-bold">All Transactions</h3>
+                <div className="mt-6 space-y-3">
+                  {[
+                    { desc: "Deep clean apartment", worker: "Yuki Tanaka", amount: "-¥18,000", date: "Dec 10, 2024", status: "Completed" },
+                    { desc: "Plumbing repair", worker: "Ahmed Hassan", amount: "-¥12,500", date: "Dec 8, 2024", status: "Completed" },
+                    { desc: "Moving help", worker: "João Santos", amount: "-¥8,000", date: "Dec 5, 2024", status: "Completed" },
+                    { desc: "Cancelled task refund", worker: "System", amount: "+¥5,000", date: "Dec 3, 2024", status: "Refunded" },
+                    { desc: "Garden cleanup", worker: "Arjun Patel", amount: "-¥6,500", date: "Dec 1, 2024", status: "Completed" },
+                  ].map((tx, i) => (
+                    <div key={i} className="flex items-center justify-between rounded-2xl border border-midnight/10 bg-cream p-4">
+                      <div>
+                        <p className="font-semibold">{tx.desc}</p>
+                        <p className="font-mono text-xs text-midnight/50">{tx.worker} · {tx.date}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`font-display font-bold ${tx.amount.startsWith("+") ? "text-emerald" : "text-midnight"}`}>
+                          {tx.amount}
+                        </p>
+                        <p className="font-mono text-xs text-midnight/50">{tx.status}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "methods" && (
+              <div>
+                <h3 className="font-display text-xl font-bold">Payment Methods</h3>
+                <div className="mt-6 space-y-4">
+                  {[
+                    { type: "Credit Card", detail: "•••• •••• •••• 4242", expiry: "12/26", default: true },
+                    { type: "Bank Transfer", detail: "Mizuho Bank •••• 1234", expiry: "", default: false },
+                    { type: "Digital Wallet", detail: "PayPay • john.doe@email.com", expiry: "", default: false },
+                  ].map((method, i) => (
+                    <div key={i} className="flex items-center justify-between rounded-2xl border-2 border-midnight/10 bg-cream p-5">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-indigo to-violet text-xl">
+                          💳
+                        </div>
+                        <div>
+                          <p className="font-semibold">{method.type}</p>
+                          <p className="font-mono text-sm text-midnight/60">{method.detail}</p>
+                          {method.expiry && <p className="font-mono text-xs text-midnight/40">Expires {method.expiry}</p>}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {method.default && (
+                          <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                            Default
+                          </span>
+                        )}
+                        <button className="rounded-full border border-midnight/20 px-4 py-2 font-mono text-xs text-midnight/60 hover:bg-mist">
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => showToast("Payment method added!", "success")}
+                    className="w-full rounded-2xl border-2 border-dashed border-midnight/20 p-5 text-center font-semibold text-midnight/60 transition-all hover:border-indigo hover:bg-indigo/5 hover:text-indigo"
+                  >
+                    + Add Payment Method
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "invoices" && (
+              <div>
+                <h3 className="font-display text-xl font-bold">Invoices</h3>
+                <div className="mt-6 space-y-3">
+                  {[
+                    { id: "INV-2024-001", date: "Dec 10, 2024", amount: "¥18,000", status: "Paid" },
+                    { id: "INV-2024-002", date: "Dec 8, 2024", amount: "¥12,500", status: "Paid" },
+                    { id: "INV-2024-003", date: "Dec 5, 2024", amount: "¥8,000", status: "Paid" },
+                    { id: "INV-2024-004", date: "Dec 1, 2024", amount: "¥6,500", status: "Paid" },
+                  ].map((inv, i) => (
+                    <div key={i} className="flex items-center justify-between rounded-2xl border border-midnight/10 bg-cream p-4">
+                      <div>
+                        <p className="font-semibold">{inv.id}</p>
+                        <p className="font-mono text-xs text-midnight/50">{inv.date}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <p className="font-display font-bold">{inv.amount}</p>
+                        <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                          {inv.status}
+                        </span>
+                        <button className="rounded-full border border-midnight/20 px-4 py-2 font-mono text-xs text-midnight/60 hover:bg-mist">
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== HELP CENTER =====
+function HelpCenter({ navigate }: { navigate: (v: View) => void }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  const faqs = [
+    { q: "How do I post a task?", a: "Click 'Post Task' in the navigation, fill in the details about what you need done, set your budget, and publish. Workers nearby will see your task and send offers." },
+    { q: "How do I hire a worker?", a: "Browse worker profiles, check their ratings and reviews, then click 'Invite' or 'Message' to connect. Once you agree on terms, confirm the booking." },
+    { q: "How does payment work?", a: "Payments are held securely until the task is completed. Once you confirm the work is done, funds are released to the worker. We support multiple payment methods." },
+    { q: "What if I'm not satisfied with the work?", a: "Contact our support team within 24 hours. We'll mediate between you and the worker to find a solution, including potential refunds if needed." },
+    { q: "How do I become a verified worker?", a: "Complete your profile, upload ID verification, pass skill assessments, and maintain a high rating. Our team will review your application within 48 hours." },
+    { q: "Can I cancel a task?", a: "Yes, you can cancel before a worker accepts. After acceptance, cancellation fees may apply depending on timing. Check our cancellation policy for details." },
+  ];
+
+  const categories = [
+    { title: "Getting Started", icon: "🚀", articles: 12 },
+    { title: "Posting Tasks", icon: "📝", articles: 8 },
+    { title: "Hiring Workers", icon: "👥", articles: 15 },
+    { title: "Payments & Billing", icon: "💳", articles: 10 },
+    { title: "Safety & Trust", icon: "🛡️", articles: 7 },
+    { title: "Account Settings", icon: "⚙️", articles: 9 },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-5xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8 text-center">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Help Center</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-6xl">How can we help?</h1>
+            <p className="mt-4 text-lg text-midnight/60">Find answers, guides, and support</p>
+          </div>
+        </Reveal>
+
+        {/* Search */}
+        <Reveal delay={100}>
+          <div className="mx-auto max-w-2xl">
+            <div className="flex items-center gap-3 rounded-3xl border-2 border-midnight/10 bg-white px-6 py-4 shadow-xl">
+              <IconSearch className="h-6 w-6 text-midnight/40" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for help articles..."
+                className="w-full bg-transparent text-lg outline-none placeholder:text-midnight/40"
+              />
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Categories */}
+        <Reveal delay={150}>
+          <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {categories.map((cat, i) => (
+              <button
+                key={cat.title}
+                className="group rounded-3xl border-2 border-midnight/10 bg-white p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-indigo hover:shadow-xl"
+              >
+                <span className="text-4xl">{cat.icon}</span>
+                <h3 className="mt-4 font-display text-xl font-bold group-hover:text-indigo">{cat.title}</h3>
+                <p className="mt-2 font-mono text-sm text-midnight/60">{cat.articles} articles</p>
+              </button>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* FAQs */}
+        <Reveal delay={200}>
+          <div className="mt-16">
+            <h2 className="font-display text-3xl font-bold">Frequently Asked Questions</h2>
+            <div className="mt-6 space-y-3">
+              {faqs.map((faq, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl border-2 border-midnight/10 bg-white overflow-hidden"
+                >
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                    className="flex w-full items-center justify-between p-5 text-left"
+                  >
+                    <span className="font-semibold">{faq.q}</span>
+                    <IconChevron className={`h-5 w-5 transition-transform ${expandedFaq === i ? "rotate-180" : ""}`} />
+                  </button>
+                  {expandedFaq === i && (
+                    <div className="border-t border-midnight/10 bg-cream p-5">
+                      <p className="text-midnight/70">{faq.a}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Contact */}
+        <Reveal delay={250}>
+          <div className="mt-16 rounded-3xl bg-gradient-to-r from-indigo via-violet to-amber p-10 text-center text-white shadow-2xl">
+            <h2 className="font-display text-3xl font-bold">Still need help?</h2>
+            <p className="mt-3 text-lg text-white/90">Our support team is here 24/7</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <button className="rounded-full bg-white px-8 py-4 font-semibold text-midnight shadow-lg transition-all hover:scale-105">
+                💬 Live Chat
+              </button>
+              <button className="rounded-full border-2 border-white/30 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20">
+                📧 Email Support
+              </button>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 // ===== FOOTER =====
 function Footer({ navigate }: { navigate: (v: View) => void }) {
   return (
     <footer className="bg-midnight text-white">
       <div className="mx-auto max-w-7xl px-5 py-16 md:px-8">
-        <div className="grid gap-12 md:grid-cols-4">
+        <div className="grid gap-12 md:grid-cols-5">
           <div>
             <button onClick={() => navigate("home")} className="flex items-center gap-3 group">
               <LogoMark className="h-7 w-7 text-indigo transition-transform group-hover:scale-110" />
@@ -2003,17 +2991,43 @@ function Footer({ navigate }: { navigate: (v: View) => void }) {
               <button onClick={() => navigate("business-workspace")} className="block text-white/70 hover:text-white transition-colors">
                 Business Workspace
               </button>
+              <button onClick={() => navigate("analytics")} className="block text-white/70 hover:text-white transition-colors">
+                Analytics
+              </button>
             </div>
           </div>
 
           <div>
             <p className="mb-4 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
-              About
+              Account
             </p>
             <div className="space-y-2">
-              <a href="#top" className="block text-white/70 hover:text-white transition-colors">How it works</a>
+              <button onClick={() => navigate("my-profile")} className="block text-white/70 hover:text-white transition-colors">
+                My Profile
+              </button>
+              <button onClick={() => navigate("messages")} className="block text-white/70 hover:text-white transition-colors">
+                Messages
+              </button>
+              <button onClick={() => navigate("notifications")} className="block text-white/70 hover:text-white transition-colors">
+                Notifications
+              </button>
+              <button onClick={() => navigate("payments")} className="block text-white/70 hover:text-white transition-colors">
+                Payments
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-4 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+              Support
+            </p>
+            <div className="space-y-2">
+              <button onClick={() => navigate("help-center")} className="block text-white/70 hover:text-white transition-colors">
+                Help Center
+              </button>
               <a href="#top" className="block text-white/70 hover:text-white transition-colors">Trust & Safety</a>
-              <a href="#top" className="block text-white/70 hover:text-white transition-colors">Support</a>
+              <a href="#top" className="block text-white/70 hover:text-white transition-colors">Contact Us</a>
+              <a href="#top" className="block text-white/70 hover:text-white transition-colors">Community Guidelines</a>
             </div>
           </div>
         </div>
