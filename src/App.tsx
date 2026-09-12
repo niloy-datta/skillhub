@@ -50,73 +50,181 @@ export default function App() {
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [savedWorkers, setSavedWorkers] = useState<Set<string>>(new Set());
+  const [savedTasks, setSavedTasks] = useState<Set<string>>(new Set());
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
 
   const navigate = (v: View) => {
     setView(v);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const showToast = (message: string, type: "success" | "error" | "info" = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const toggleSaveWorker = (workerId: string) => {
+    setSavedWorkers((prev) => {
+      const next = new Set(prev);
+      if (next.has(workerId)) {
+        next.delete(workerId);
+        showToast("Worker removed from saved", "info");
+      } else {
+        next.add(workerId);
+        showToast("Worker saved!", "success");
+      }
+      return next;
+    });
+  };
+
+  const toggleSaveTask = (taskId: string) => {
+    setSavedTasks((prev) => {
+      const next = new Set(prev);
+      if (next.has(taskId)) {
+        next.delete(taskId);
+        showToast("Task removed from saved", "info");
+      } else {
+        next.add(taskId);
+        showToast("Task saved!", "success");
+      }
+      return next;
+    });
+  };
+
   return (
     <div id="top" className="min-h-screen bg-cream">
       <div className="noise-layer" aria-hidden="true" />
-      <Nav view={view} navigate={navigate} />
+      <Nav view={view} navigate={navigate} savedCount={savedWorkers.size + savedTasks.size} />
+      <Toast toast={toast} />
       <main>
         {view === "home" && <Home navigate={navigate} />}
-        {view === "get-help" && <GetHelp navigate={navigate} setSelectedTask={setSelectedTask} />}
-        {view === "post-task" && <PostTask navigate={navigate} />}
-        {view === "task-detail" && selectedTask && <TaskDetail task={selectedTask} navigate={navigate} />}
+        {view === "get-help" && <GetHelp navigate={navigate} setSelectedTask={setSelectedTask} savedTasks={savedTasks} toggleSaveTask={toggleSaveTask} />}
+        {view === "post-task" && <PostTask navigate={navigate} showToast={showToast} />}
+        {view === "task-detail" && selectedTask && <TaskDetail task={selectedTask} navigate={navigate} showToast={showToast} />}
         {view === "hire-people" && <HirePeople navigate={navigate} setSelectedCompany={setSelectedCompany} />}
-        {view === "post-job" && <PostJob navigate={navigate} />}
-        {view === "find-workers" && <FindWorkers navigate={navigate} setSelectedWorker={setSelectedWorker} />}
-        {view === "worker-profile" && selectedWorker && <WorkerProfile worker={selectedWorker} navigate={navigate} />}
+        {view === "post-job" && <PostJob navigate={navigate} showToast={showToast} />}
+        {view === "find-workers" && <FindWorkers navigate={navigate} setSelectedWorker={setSelectedWorker} savedWorkers={savedWorkers} toggleSaveWorker={toggleSaveWorker} showToast={showToast} />}
+        {view === "worker-profile" && selectedWorker && <WorkerProfile worker={selectedWorker} navigate={navigate} saved={savedWorkers.has(selectedWorker.id)} toggleSave={() => toggleSaveWorker(selectedWorker.id)} showToast={showToast} />}
         {view === "company-profile" && selectedCompany && <CompanyProfile company={selectedCompany} navigate={navigate} />}
-        {view === "business-workspace" && <BusinessWorkspace navigate={navigate} />}
+        {view === "business-workspace" && <BusinessWorkspace navigate={navigate} showToast={showToast} />}
       </main>
       <Footer navigate={navigate} />
     </div>
   );
 }
 
-// ===== NAVIGATION =====
-function Nav({ view, navigate }: { view: View; navigate: (v: View) => void }) {
+// ===== TOAST =====
+function Toast({ toast }: { toast: { message: string; type: "success" | "error" | "info" } | null }) {
+  if (!toast) return null;
+  const colors = {
+    success: "bg-emerald text-white",
+    error: "bg-rose text-white",
+    info: "bg-indigo text-white",
+  };
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-midnight/95 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
-        <button onClick={() => navigate("home")} className="flex items-center gap-3 group">
-          <LogoMark className="h-8 w-8 text-indigo transition-transform group-hover:scale-110" />
-          <span className="font-display text-xl font-bold tracking-tight text-white">
-            Skillhub
-          </span>
-        </button>
-
-        <nav className="hidden items-center gap-2 md:flex">
-          {[
-            { label: "Get Help", view: "get-help" as View },
-            { label: "Hire People", view: "hire-people" as View },
-            { label: "Find Workers", view: "find-workers" as View },
-          ].map((item) => (
-            <button
-              key={item.view}
-              onClick={() => navigate(item.view)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
-                view === item.view
-                  ? "bg-indigo text-white"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <button
-          onClick={() => navigate("post-task")}
-          className="rounded-full bg-gradient-to-r from-indigo to-violet px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
-        >
-          Post Task
-        </button>
+    <div className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 animate-[slideUp_0.3s_ease-out]">
+      <div className={`rounded-2xl px-6 py-3 font-semibold shadow-2xl ${colors[toast.type]}`}>
+        {toast.message}
       </div>
-    </header>
+    </div>
+  );
+}
+
+// ===== NAVIGATION =====
+function Nav({ view, navigate, savedCount }: { view: View; navigate: (v: View) => void; savedCount: number }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <>
+      <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-midnight/95 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
+          <button onClick={() => navigate("home")} className="flex items-center gap-3 group">
+            <LogoMark className="h-8 w-8 text-indigo transition-transform group-hover:scale-110" />
+            <span className="font-display text-xl font-bold tracking-tight text-white">
+              Skillhub
+            </span>
+          </button>
+
+          <nav className="hidden items-center gap-2 md:flex">
+            {[
+              { label: "Get Help", view: "get-help" as View },
+              { label: "Hire People", view: "hire-people" as View },
+              { label: "Find Workers", view: "find-workers" as View },
+            ].map((item) => (
+              <button
+                key={item.view}
+                onClick={() => navigate(item.view)}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
+                  view === item.view
+                    ? "bg-indigo text-white"
+                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            {savedCount > 0 && (
+              <span className="hidden rounded-full bg-white/10 px-3 py-1.5 font-mono text-xs text-white/80 md:block">
+                {savedCount} saved
+              </span>
+            )}
+            <button
+              onClick={() => navigate("post-task")}
+              className="rounded-full bg-gradient-to-r from-indigo to-violet px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+            >
+              Post Task
+            </button>
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden rounded-full bg-white/10 p-2.5 text-white"
+              aria-label="Menu"
+            >
+              {mobileOpen ? <IconX className="h-5 w-5" /> : (
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 bg-midnight/98 pt-20 md:hidden">
+          <nav className="flex flex-col gap-2 p-6">
+            {[
+              { label: "Get Help", view: "get-help" as View, icon: "🛠️" },
+              { label: "Hire People", view: "hire-people" as View, icon: "🏢" },
+              { label: "Find Workers", view: "find-workers" as View, icon: "👥" },
+              { label: "Post Task", view: "post-task" as View, icon: "📝" },
+              { label: "Post Job", view: "post-job" as View, icon: "💼" },
+              { label: "Business Workspace", view: "business-workspace" as View, icon: "📊" },
+            ].map((item) => (
+              <button
+                key={item.view}
+                onClick={() => {
+                  navigate(item.view);
+                  setMobileOpen(false);
+                }}
+                className={`flex items-center gap-3 rounded-2xl px-5 py-4 text-left text-lg font-semibold transition-all ${
+                  view === item.view
+                    ? "bg-indigo text-white"
+                    : "text-white/80 hover:bg-white/10"
+                }`}
+              >
+                <span className="text-2xl">{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -239,9 +347,13 @@ function Home({ navigate }: { navigate: (v: View) => void }) {
 function GetHelp({
   navigate,
   setSelectedTask,
+  savedTasks,
+  toggleSaveTask,
 }: {
   navigate: (v: View) => void;
   setSelectedTask: (t: Task) => void;
+  savedTasks: Set<string>;
+  toggleSaveTask: (taskId: string) => void;
 }) {
   const openTask = (task: Task) => {
     setSelectedTask(task);
@@ -309,7 +421,12 @@ function GetHelp({
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {SAMPLE_TASKS.map((task, i) => (
             <Reveal key={task.id} delay={250 + i * 50}>
-              <TaskCard task={task} onClick={() => openTask(task)} />
+              <TaskCard
+                task={task}
+                onClick={() => openTask(task)}
+                saved={savedTasks.has(task.id)}
+                onToggleSave={() => toggleSaveTask(task.id)}
+              />
             </Reveal>
           ))}
         </div>
@@ -318,7 +435,7 @@ function GetHelp({
   );
 }
 
-function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
+function TaskCard({ task, onClick, saved, onToggleSave }: { task: Task; onClick: () => void; saved: boolean; onToggleSave: () => void }) {
   return (
     <article
       onClick={onClick}
@@ -328,10 +445,24 @@ function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
         <span className="rounded-full bg-indigo/10 px-4 py-1.5 font-mono text-xs font-semibold text-indigo">
           {task.category}
         </span>
-        <span className="flex items-center gap-1.5 font-mono text-xs text-midnight/50">
-          <IconClock className="h-3.5 w-3.5" />
-          {formatAgo(task.postedHours)}
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSave();
+            }}
+            className={`rounded-full p-2 transition-all ${
+              saved ? "bg-indigo/10 text-indigo" : "text-midnight/30 hover:bg-mist hover:text-midnight"
+            }`}
+            aria-label={saved ? "Remove from saved" : "Save task"}
+          >
+            <IconBookmark className="h-4 w-4" filled={saved} />
+          </button>
+          <span className="flex items-center gap-1.5 font-mono text-xs text-midnight/50">
+            <IconClock className="h-3.5 w-3.5" />
+            {formatAgo(task.postedHours)}
+          </span>
+        </div>
       </div>
 
       <h3 className="font-display text-xl font-bold leading-tight group-hover:text-indigo transition-colors">
@@ -364,7 +495,7 @@ function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
 }
 
 // ===== POST TASK =====
-function PostTask({ navigate }: { navigate: (v: View) => void }) {
+function PostTask({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
   const [step, setStep] = useState(1);
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
@@ -379,8 +510,11 @@ function PostTask({ navigate }: { navigate: (v: View) => void }) {
   const [workers, setWorkers] = useState("1");
   const [requirements, setRequirements] = useState("");
 
+  const [submitted, setSubmitted] = useState(false);
+
   const handleSubmit = () => {
-    navigate("get-help");
+    setSubmitted(true);
+    showToast("Task posted successfully! Workers will see it soon.", "success");
   };
 
   return (
@@ -419,6 +553,37 @@ function PostTask({ navigate }: { navigate: (v: View) => void }) {
         </Reveal>
 
         <Reveal delay={150}>
+          {submitted ? (
+            <div className="rounded-3xl border-2 border-emerald/30 bg-white p-10 text-center shadow-xl md:p-16">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald/10">
+                <IconCheck className="h-10 w-10 text-emerald" />
+              </div>
+              <h2 className="font-display text-3xl font-black">Task Posted!</h2>
+              <p className="mt-4 text-lg text-midnight/60">
+                Your task is now live. Verified workers nearby will see it and send you offers.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <button
+                  onClick={() => navigate("get-help")}
+                  className="rounded-2xl bg-gradient-to-r from-indigo to-violet px-8 py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+                >
+                  View matched workers
+                </button>
+                <button
+                  onClick={() => {
+                    setSubmitted(false);
+                    setStep(1);
+                    setCategory("");
+                    setTitle("");
+                    setDescription("");
+                  }}
+                  className="rounded-2xl border-2 border-midnight/20 px-8 py-4 font-semibold text-midnight transition-all hover:bg-mist"
+                >
+                  Post another task
+                </button>
+              </div>
+            </div>
+          ) : (
           <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl md:p-10">
             {step === 1 && (
               <div className="space-y-6">
@@ -632,6 +797,7 @@ function PostTask({ navigate }: { navigate: (v: View) => void }) {
               </div>
             )}
           </div>
+          )}
         </Reveal>
       </div>
     </section>
@@ -639,7 +805,7 @@ function PostTask({ navigate }: { navigate: (v: View) => void }) {
 }
 
 // ===== TASK DETAIL =====
-function TaskDetail({ task, navigate }: { task: Task; navigate: (v: View) => void }) {
+function TaskDetail({ task, navigate, showToast }: { task: Task; navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
   const matchedWorkers = WORKERS.slice(0, 5);
 
   return (
@@ -875,8 +1041,9 @@ function CompanyCard({ company, onClick }: { company: Company; onClick: () => vo
 }
 
 // ===== POST JOB =====
-function PostJob({ navigate }: { navigate: (v: View) => void }) {
+function PostJob({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
   const [tab, setTab] = useState<"job" | "shift" | "crew">("job");
+  const [submitted, setSubmitted] = useState(false);
 
   return (
     <section className="relative bg-cream pt-32 pb-24">
@@ -920,6 +1087,33 @@ function PostJob({ navigate }: { navigate: (v: View) => void }) {
         </Reveal>
 
         <Reveal delay={150}>
+          {submitted ? (
+            <div className="rounded-3xl border-2 border-emerald/30 bg-white p-10 text-center shadow-xl md:p-16">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald/10">
+                <IconCheck className="h-10 w-10 text-emerald" />
+              </div>
+              <h2 className="font-display text-3xl font-black">Posted Successfully!</h2>
+              <p className="mt-4 text-lg text-midnight/60">
+                Your {tab === "crew" ? "crew request" : tab === "shift" ? "shift" : "job"} is now live. Workers will apply soon.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <button
+                  onClick={() => navigate("business-workspace")}
+                  className="rounded-2xl bg-gradient-to-r from-amber to-violet px-8 py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+                >
+                  View applicants
+                </button>
+                <button
+                  onClick={() => {
+                    setSubmitted(false);
+                  }}
+                  className="rounded-2xl border-2 border-midnight/20 px-8 py-4 font-semibold text-midnight transition-all hover:bg-mist"
+                >
+                  Post another
+                </button>
+              </div>
+            </div>
+          ) : (
           <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl md:p-10">
             {tab === "job" && (
               <div className="space-y-6">
@@ -993,7 +1187,10 @@ function PostJob({ navigate }: { navigate: (v: View) => void }) {
                 </div>
 
                 <button
-                  onClick={() => navigate("hire-people")}
+                  onClick={() => {
+                    setSubmitted(true);
+                    showToast("Job posted successfully!", "success");
+                  }}
                   className="w-full rounded-2xl bg-gradient-to-r from-amber to-violet py-4 text-lg font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
                 >
                   Post Job ✓
@@ -1070,7 +1267,10 @@ function PostJob({ navigate }: { navigate: (v: View) => void }) {
                 </div>
 
                 <button
-                  onClick={() => navigate("hire-people")}
+                  onClick={() => {
+                    setSubmitted(true);
+                    showToast("Shift posted successfully!", "success");
+                  }}
                   className="w-full rounded-2xl bg-gradient-to-r from-amber to-violet py-4 text-lg font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
                 >
                   Post Shift ✓
@@ -1132,7 +1332,10 @@ function PostJob({ navigate }: { navigate: (v: View) => void }) {
                 </div>
 
                 <button
-                  onClick={() => navigate("business-workspace")}
+                  onClick={() => {
+                    setSubmitted(true);
+                    showToast("Crew request submitted!", "success");
+                  }}
                   className="w-full rounded-2xl bg-gradient-to-r from-amber to-violet py-4 text-lg font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
                 >
                   Build Crew →
@@ -1140,6 +1343,7 @@ function PostJob({ navigate }: { navigate: (v: View) => void }) {
               </div>
             )}
           </div>
+          )}
         </Reveal>
       </div>
     </section>
@@ -1150,9 +1354,15 @@ function PostJob({ navigate }: { navigate: (v: View) => void }) {
 function FindWorkers({
   navigate,
   setSelectedWorker,
+  savedWorkers,
+  toggleSaveWorker,
+  showToast,
 }: {
   navigate: (v: View) => void;
   setSelectedWorker: (w: Worker) => void;
+  savedWorkers: Set<string>;
+  toggleSaveWorker: (workerId: string) => void;
+  showToast: (message: string, type?: "success" | "error" | "info") => void;
 }) {
   const openWorker = (worker: Worker) => {
     setSelectedWorker(worker);
@@ -1223,7 +1433,13 @@ function FindWorkers({
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {WORKERS.map((worker, i) => (
             <Reveal key={worker.id} delay={250 + i * 50}>
-              <WorkerCard worker={worker} onClick={() => openWorker(worker)} />
+              <WorkerCard
+                worker={worker}
+                onClick={() => openWorker(worker)}
+                saved={savedWorkers.has(worker.id)}
+                onToggleSave={() => toggleSaveWorker(worker.id)}
+                onInvite={() => showToast(`Invitation sent to ${worker.name}!`, "success")}
+              />
             </Reveal>
           ))}
         </div>
@@ -1232,7 +1448,7 @@ function FindWorkers({
   );
 }
 
-function WorkerCard({ worker, onClick }: { worker: Worker; onClick: () => void }) {
+function WorkerCard({ worker, onClick, saved, onToggleSave, onInvite }: { worker: Worker; onClick: () => void; saved: boolean; onToggleSave: () => void; onInvite: () => void }) {
   return (
     <article
       onClick={onClick}
@@ -1240,12 +1456,26 @@ function WorkerCard({ worker, onClick }: { worker: Worker; onClick: () => void }
     >
       <div className="mb-4 flex items-start justify-between">
         <WorkerAvatar worker={worker} />
-        {worker.humanVerified && (
-          <span className="flex items-center gap-1.5 rounded-full bg-emerald/10 px-3 py-1.5 font-mono text-xs font-semibold text-emerald">
-            <IconCheck className="h-3 w-3" />
-            Verified
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {worker.humanVerified && (
+            <span className="flex items-center gap-1.5 rounded-full bg-emerald/10 px-3 py-1.5 font-mono text-xs font-semibold text-emerald">
+              <IconCheck className="h-3 w-3" />
+              Verified
+            </span>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSave();
+            }}
+            className={`rounded-full p-2 transition-all ${
+              saved ? "bg-indigo/10 text-indigo" : "text-midnight/30 hover:bg-mist hover:text-midnight"
+            }`}
+            aria-label={saved ? "Remove from saved" : "Save worker"}
+          >
+            <IconBookmark className="h-4 w-4" filled={saved} />
+          </button>
+        </div>
       </div>
 
       <h3 className="font-display text-xl font-bold group-hover:text-indigo transition-colors">
@@ -1287,7 +1517,7 @@ function WorkerCard({ worker, onClick }: { worker: Worker; onClick: () => void }
 }
 
 // ===== WORKER PROFILE =====
-function WorkerProfile({ worker, navigate }: { worker: Worker; navigate: (v: View) => void }) {
+function WorkerProfile({ worker, navigate, saved, toggleSave, showToast }: { worker: Worker; navigate: (v: View) => void; saved: boolean; toggleSave: () => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
   return (
     <section className="relative bg-cream pt-32 pb-24">
       <div className="mx-auto max-w-4xl px-5 md:px-8">
@@ -1366,11 +1596,27 @@ function WorkerProfile({ worker, navigate }: { worker: Worker; navigate: (v: Vie
             </div>
 
             <div className="mt-10 flex gap-3">
-              <button className="flex-1 rounded-2xl bg-gradient-to-r from-indigo to-violet py-4 text-lg font-semibold text-white shadow-lg transition-all hover:scale-[1.02]">
+              <button
+                onClick={() => showToast(`Invitation sent to ${worker.name}!`, "success")}
+                className="flex-1 rounded-2xl bg-gradient-to-r from-indigo to-violet py-4 text-lg font-semibold text-white shadow-lg transition-all hover:scale-[1.02]"
+              >
                 Invite to job
               </button>
-              <button className="flex-1 rounded-2xl border-2 border-midnight/20 py-4 text-lg font-semibold text-midnight transition-all hover:bg-mist">
+              <button
+                onClick={() => showToast(`Message sent to ${worker.name}`, "success")}
+                className="flex-1 rounded-2xl border-2 border-midnight/20 py-4 text-lg font-semibold text-midnight transition-all hover:bg-mist"
+              >
                 Message
+              </button>
+              <button
+                onClick={toggleSave}
+                className={`rounded-2xl border-2 px-6 py-4 font-semibold transition-all hover:scale-[1.02] ${
+                  saved
+                    ? "border-indigo bg-indigo/10 text-indigo"
+                    : "border-midnight/20 text-midnight hover:bg-mist"
+                }`}
+              >
+                <IconBookmark className="inline h-5 w-5" filled={saved} />
               </button>
             </div>
           </div>
@@ -1467,7 +1713,7 @@ function CompanyProfile({ company, navigate }: { company: Company; navigate: (v:
 }
 
 // ===== BUSINESS WORKSPACE =====
-function BusinessWorkspace({ navigate }: { navigate: (v: View) => void }) {
+function BusinessWorkspace({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
   const [tab, setTab] = useState<"open" | "applicants" | "shifts" | "workers" | "trusted" | "crews">("open");
 
   return (
@@ -1577,7 +1823,39 @@ function BusinessWorkspace({ navigate }: { navigate: (v: View) => void }) {
             {tab === "shifts" && (
               <div>
                 <h2 className="font-display text-2xl font-bold">Upcoming shifts</h2>
-                <p className="mt-3 text-midnight/60">5 shifts scheduled</p>
+                <div className="mt-6 space-y-4">
+                  {BUSINESS_JOBS.filter((j) => j.type === "shift").slice(0, 4).map((job) => (
+                    <div key={job.id} className="rounded-2xl border border-midnight/10 bg-cream p-6">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-display text-xl font-bold">{job.role}</h3>
+                          <p className="mt-1 font-mono text-sm text-midnight/60">{job.location}</p>
+                        </div>
+                        <span className="rounded-full bg-amber/10 px-4 py-1.5 font-mono text-xs font-semibold text-amber">
+                          Upcoming
+                        </span>
+                      </div>
+                      <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+                        <div>
+                          <p className="font-mono text-xs text-midnight/50">Date</p>
+                          <p className="font-semibold">{job.date || "TBD"}</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs text-midnight/50">Time</p>
+                          <p className="font-semibold">{job.startTime || ""}–{job.endTime || ""}</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs text-midnight/50">Workers</p>
+                          <p className="font-semibold">{job.positions} needed</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs text-midnight/50">Rate</p>
+                          <p className="font-semibold">{job.pay}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -1585,6 +1863,23 @@ function BusinessWorkspace({ navigate }: { navigate: (v: View) => void }) {
               <div>
                 <h2 className="font-display text-2xl font-bold">All workers</h2>
                 <p className="mt-3 text-midnight/60">28 workers have worked for you</p>
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  {WORKERS.slice(0, 6).map((worker) => (
+                    <div key={worker.id} className="rounded-2xl border border-midnight/10 bg-cream p-5">
+                      <div className="flex items-start gap-4">
+                        <WorkerAvatar worker={worker} size="sm" />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-display font-bold">{worker.name}</p>
+                          <p className="mt-1 font-mono text-xs text-midnight/60">{worker.city}</p>
+                          <div className="mt-2 flex items-center gap-2 font-mono text-xs">
+                            <IconStar className="h-3 w-3 text-amber" />
+                            {worker.rating} · {worker.completedWork} shifts
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -1592,6 +1887,26 @@ function BusinessWorkspace({ navigate }: { navigate: (v: View) => void }) {
               <div>
                 <h2 className="font-display text-2xl font-bold">Trusted workers</h2>
                 <p className="mt-3 text-midnight/60">8 verified, reliable workers</p>
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  {WORKERS.filter((w) => w.humanVerified).slice(0, 4).map((worker) => (
+                    <div key={worker.id} className="rounded-2xl border border-emerald/20 bg-emerald/5 p-5">
+                      <div className="flex items-start gap-4">
+                        <WorkerAvatar worker={worker} size="sm" />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-display font-bold">{worker.name}</p>
+                            <span className="rounded-full bg-emerald/20 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald">Trusted</span>
+                          </div>
+                          <p className="mt-1 font-mono text-xs text-midnight/60">{worker.completedWork} shifts completed</p>
+                          <div className="mt-2 flex items-center gap-2 font-mono text-xs">
+                            <IconStar className="h-3 w-3 text-amber" />
+                            {worker.rating}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -1599,6 +1914,39 @@ function BusinessWorkspace({ navigate }: { navigate: (v: View) => void }) {
               <div>
                 <h2 className="font-display text-2xl font-bold">Built crews</h2>
                 <p className="mt-3 text-midnight/60">2 crews created</p>
+                <div className="mt-6 space-y-4">
+                  {BUSINESS_JOBS.filter((j) => j.type === "crew").map((job) => (
+                    <div key={job.id} className="rounded-2xl border border-midnight/10 bg-cream p-6">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-display text-xl font-bold">{job.role}</h3>
+                          <p className="mt-1 font-mono text-sm text-midnight/60">{job.location} · {job.date || "TBD"}</p>
+                        </div>
+                        <span className="rounded-full bg-emerald/10 px-4 py-1.5 font-mono text-xs font-semibold text-emerald">
+                          Built
+                        </span>
+                      </div>
+                      <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+                        <div className="rounded-xl bg-white p-3 text-center">
+                          <p className="font-display text-2xl font-bold">{job.positions}</p>
+                          <p className="font-mono text-xs text-midnight/50">Required</p>
+                        </div>
+                        <div className="rounded-xl bg-white p-3 text-center">
+                          <p className="font-display text-2xl font-bold text-indigo">{Math.floor(job.positions * 2.5)}</p>
+                          <p className="font-mono text-xs text-midnight/50">Matched</p>
+                        </div>
+                        <div className="rounded-xl bg-white p-3 text-center">
+                          <p className="font-display text-2xl font-bold text-emerald">{Math.floor(job.positions * 1.6)}</p>
+                          <p className="font-mono text-xs text-midnight/50">Verified</p>
+                        </div>
+                        <div className="rounded-xl bg-white p-3 text-center">
+                          <p className="font-display text-2xl font-bold text-amber">{Math.floor(job.positions * 0.3)}</p>
+                          <p className="font-mono text-xs text-midnight/50">Backup</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
