@@ -46,6 +46,7 @@ const RegisterPage = lazy(() => import("./components/pages/RegisterPage").then(m
 const SettingsPage = lazy(() => import("./components/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 const NotFoundPage = lazy(() => import("./components/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 const ChatPage = lazy(() => import("./components/pages/ChatPage").then(m => ({ default: m.ChatPage })));
+const LinkedInProfilePage = lazy(() => import("./components/pages/LinkedInProfilePage").then(m => ({ default: m.LinkedInProfilePage })));
 
 // Loading component
 function PageLoader() {
@@ -66,6 +67,7 @@ type View =
   | "forgot-password"
   | "settings"
   | "chat"
+  | "linkedin-profile"
   | "mission-compiler"
   | "execution-dashboard"
   | "outcome-graph"
@@ -174,6 +176,7 @@ function AppContent() {
           {view === "execution-dashboard" && <ExecutionDashboard onNavigate={navigate} />}
           {view === "404" && <NotFoundPage onNavigate={navigate} />}
           {view === "chat" && <ChatPage onNavigate={navigate} />}
+          {view === "linkedin-profile" && <LinkedInProfilePage onNavigate={navigate} />}
         </Suspense>
         {view === "get-help" && <GetHelp navigate={navigate} setSelectedTask={setSelectedTask} savedTasks={savedTasks} toggleSaveTask={toggleSaveTask} />}
         {view === "post-task" && <PostTask navigate={navigate} showToast={showToast} />}
@@ -348,6 +351,7 @@ function Nav({ view, navigate, savedCount, unreadNotifications, darkMode, setDar
               { label: "Mission Compiler", view: "mission-compiler" as View, icon: "🧠" },
               { label: "Execution Dashboard", view: "execution-dashboard" as View, icon: "⚡" },
               { label: "Chat", view: "chat" as View, icon: "💬" },
+              { label: "LinkedIn Profile", view: "linkedin-profile" as View, icon: "💼" },
               { label: "Get Help", view: "get-help" as View, icon: "🛠️" },
               { label: "Hire People", view: "hire-people" as View, icon: "🏢" },
               { label: "Find Workers", view: "find-workers" as View, icon: "👥" },
