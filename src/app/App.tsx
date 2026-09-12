@@ -1,11 +1,9 @@
-import { AppRouter } from './router';
-import { Header } from '../components/layout/Header';
+import { HomePage } from '../pages/Home';
 
 export default function App() {
   return (
     <div className="min-h-screen bg-cream">
-      <Header />
-      <AppRouter />
+      <HomePage />
     </div>
   );
 }
