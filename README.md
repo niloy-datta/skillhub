@@ -1,220 +1,204 @@
 # Skillhub
 
-A modern two-sided hiring and work marketplace platform connecting skilled workers with businesses and individuals.
+A focused two-sided hiring and work marketplace where individuals and businesses can post work, find workers, hire talent, communicate, manage work, and complete payments safely.
 
-## 🎯 Overview
+## 🎯 What is Skillhub?
 
-Skillhub is a comprehensive marketplace platform that streamlines the hiring process for both workers and employers. Built with modern web technologies, it provides a seamless experience for posting jobs, discovering talent, managing applications, and processing payments.
+Skillhub connects businesses and individuals looking to hire skilled professionals with talented workers seeking opportunities. Our platform streamlines the hiring process through an intuitive marketplace experience.
 
-### Key Features
+## 👥 Target Users
 
-- **For Workers**: Find jobs, showcase skills, apply to positions, track applications, manage earnings
-- **For Employers**: Post jobs, discover talent, manage applications, hire workers, process payments
-- **For Everyone**: Real-time messaging, secure payments, verified profiles, location-based search
+- **Businesses & Employers**: Organizations looking to hire talent for projects, tasks, or ongoing work
+- **Workers & Freelancers**: Skilled professionals seeking work opportunities
 
-## 🚀 Quick Start
+## 🔄 Core Marketplace Workflow
 
-### Prerequisites
+1. User needs work done → Posts task or job
+2. Suitable workers are discovered or matched
+3. Applications or invitations happen
+4. Communication occurs via integrated messaging
+5. Worker is hired
+6. Work is completed
+7. Payment occurs securely through our platform
+8. Both sides build reputation
 
-- Node.js 18+ 
-- npm 9+ or yarn 1.22+
-- Git
+## ✨ Core Features
 
-### Installation
+### For Workers
+- Browse available work opportunities
+- Apply to jobs and tasks
+- Manage applications and earnings
+- Maintain professional profiles
+- Communicate with potential employers
 
-```bash
-# Clone the repository
-git clone https://github.com/niloy-datta/skillhub.git
-cd skillhub
+### For Businesses
+- Post jobs and tasks
+- Search and discover qualified workers
+- Review applications and portfolios
+- Manage hires and ongoing work
+- Process secure payments
 
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-
-# Start development server
-npm run dev
-```
-
-The application will be available at `http://localhost:5173`
-
-### Build for Production
-
-```bash
-# Build the application
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-## 📁 Project Structure
-
-```
-skillhub/
-├── src/
-│   ├── app/              # Application shell and routing
-│   ├── features/         # Feature-specific modules
-│   │   ├── auth/        # Authentication
-│   │   ├── jobs/        # Job management
-│   │   ├── tasks/       # Task management
-│   │   ├── workers/     # Worker features
-│   │   ├── companies/   # Company features
-│   │   ├── messaging/   # Messaging system
-│   │   ├── payments/    # Payment processing
-│   │   └── ...
-│   ├── pages/            # Page components
-│   ├── components/       # Reusable UI components
-│   ├── hooks/            # Custom React hooks
-│   ├── services/         # API and business logic
-│   ├── types/            # TypeScript definitions
-│   ├── utils/            # Utility functions
-│   └── constants/        # Constants and configuration
-├── public/               # Static assets
-├── docs/                 # Documentation
-└── tests/                # Test files
-```
+### Shared Features
+- Real-time messaging and communication
+- User verification systems
+- Secure payment processing
+- Dispute resolution
+- Location-based matching
+- Team management capabilities
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18, TypeScript
+- **Frontend**: React 18 with TypeScript
 - **Build Tool**: Vite
-- **Styling**: Tailwind CSS v4
+- **Styling**: Tailwind CSS
 - **Routing**: React Router v6
-- **State Management**: React Context + Custom Hooks
-- **Backend**: Supabase (Auth, Database, Storage)
-- **Maps**: Leaflet
-- **Animations**: Framer Motion
+- **State Management**: React Context API
+- **Data Fetching**: TanStack Query (React Query)
 
-## 📖 Documentation
+## 📁 Project Architecture
 
-- [Release Notes](./RELEASE.md) - Current release information
-- [Deployment Guide](./docs/DEPLOYMENT.md) - How to deploy
-- [Architecture](./docs/ARCHITECTURE.md) - System architecture
-- [API Documentation](./docs/API.md) - API reference
-- [Contributing](./CONTRIBUTING.md) - How to contribute
-
-## 🚢 Deployment
-
-### Vercel (Recommended)
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
+```
+src/
+├── app/                    # Application entry points
+│   ├── App.tsx            # Main app component
+│   ├── router.tsx         # Route definitions
+│   └── providers.tsx      # Context providers
+│
+├── pages/                 # Page components
+│   ├── Home/             # Landing page
+│   ├── FindWork/         # Worker discovery
+│   ├── HireTalent/       # Company discovery
+│   ├── PostWork/         # Job/task posting
+│   ├── Dashboard/        # User dashboard
+│   ├── Messages/         # Messaging system
+│   ├── Profile/          # User profiles
+│   ├── Settings/         # Account settings
+│   ├── Auth/             # Authentication
+│   └── NotFound/         # 404 page
+│
+├── components/           # Reusable components
+│   ├── layout/          # Layout components (Header, Footer)
+│   └── ui/             # UI primitives
+│
+├── data/                # Mock data and constants
+│   └── index.ts        # Sample workers, companies, tasks, jobs
+│
+├── types/              # TypeScript type definitions
+│   └── index.ts       # Domain types
+│
+├── constants/         # Application constants
+│   └── index.ts      # Navigation items, skills, categories
+│
+├── utils/            # Utility functions
+│   └── index.ts     # Helper functions
+│
+└── main.tsx         # Application entry point
 ```
 
-### Netlify
+## 🚀 Getting Started
 
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
 ```bash
-# Install Netlify CLI
-npm i -g netlify-cli
-
-# Deploy
-netlify deploy --prod
+git clone https://github.com/niloy-datta/skillhub.git
+cd skillhub
 ```
 
-### Docker
-
+2. Install dependencies:
 ```bash
-# Build image
-docker build -t skillhub:latest .
-
-# Run container
-docker run -p 80:80 skillhub:latest
+npm install
 ```
 
-See [Deployment Guide](./docs/DEPLOYMENT.md) for detailed instructions.
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env` file:
-
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_MAPBOX_TOKEN=your_mapbox_token
+3. Start the development server:
+```bash
+npm run dev
 ```
 
-### Build Configuration
+4. Open your browser and navigate to `http://localhost:5173`
 
-The project uses Vite with optimized settings:
-- Code splitting for optimal bundle sizes
-- Tree shaking to remove unused code
-- Asset optimization and compression
+## 📦 Build
 
-## 🧪 Testing
+Build the application for production:
 
 ```bash
-# Type checking
-npm run typecheck
-
-# Linting
-npm run lint
-
-# Build verification
 npm run build
 ```
 
-## 📊 Performance
+Preview the production build:
 
-The application is optimized for performance:
-- First Contentful Paint: < 1.5s
-- Time to Interactive: < 3s
-- Bundle Size: < 200KB (gzipped)
-- Lighthouse Score: > 90
+```bash
+npm run preview
+```
 
-## 🌐 Browser Support
+## 🧪 Development Commands
 
-- Chrome/Edge 90+
-- Firefox 88+
-- Safari 14+
-- Mobile browsers (iOS Safari, Chrome Mobile)
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run type-check` - Run TypeScript type checking
+
+## 🏗️ Architecture Decisions
+
+### Feature-Based Organization
+The project follows a feature-based architecture where related code is grouped by business domain rather than technical type. This makes it easier to:
+- Find related code
+- Understand feature boundaries
+- Scale the codebase
+- Onboard new developers
+
+### Role-Based Navigation
+Navigation is tailored to user roles:
+- **Workers**: Find work, saved jobs, applications, messages, earnings, profile
+- **Businesses**: Post work, active jobs, applicants, workers, messages, payments
+
+### Clean Separation of Concerns
+- **Pages**: Route-level components
+- **Components**: Reusable UI elements
+- **Data**: Mock data and API integration
+- **Types**: TypeScript definitions
+- **Utils**: Helper functions
+
+## 📋 Roadmap
+
+### Phase 1: Core Marketplace (Current)
+- ✅ User authentication
+- ✅ Job/task posting
+- ✅ Worker discovery
+- ✅ Basic messaging
+- ✅ Profile management
+
+### Phase 2: Enhanced Features
+- [ ] Advanced search and filtering
+- [ ] Payment integration
+- [ ] User verification system
+- [ ] Notification system
+- [ ] Review and rating system
+
+### Phase 3: Advanced Features
+- [ ] Real-time messaging
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app development
+- [ ] Integration with external tools
+- [ ] AI-powered matching
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details.
+Please read our contributing guidelines before submitting pull requests.
 
-### Development Workflow
+## 📄 License
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is proprietary software. All rights reserved.
+This project is licensed under the MIT License.
 
 ## 🆘 Support
 
-- **Documentation**: Check the [docs](./docs) folder
-- **Issues**: [GitHub Issues](https://github.com/niloy-datta/skillhub/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/niloy-datta/skillhub/discussions)
-
-## 📈 Roadmap
-
-See our [Roadmap](./ROADMAP.md) for planned features and improvements.
-
-## 🙏 Acknowledgments
-
-- React team for the amazing framework
-- Vite team for the fast build tool
-- Tailwind CSS for the utility-first CSS framework
-- Supabase for the backend infrastructure
-- All contributors who have helped build this project
+For support, please open an issue on GitHub or contact the development team.
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: 2024  
-**Status**: Production Ready ✅
-
-Made with ❤️ by the Skillhub team
+**Built with ❤️ for the future of work**
