@@ -53,7 +53,17 @@ type View =
   | "verification"
   | "disputes"
   | "referrals"
-  | "achievements";
+  | "achievements"
+  | "social-sharing"
+  | "coupons"
+  | "loyalty"
+  | "leaderboard"
+  | "team"
+  | "video-call"
+  | "language"
+  | "forecasting"
+  | "trends"
+  | "insights";
 
 export default function App() {
   const [view, setView] = useState<View>("home");
@@ -64,6 +74,7 @@ export default function App() {
   const [savedTasks, setSavedTasks] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
   const [unreadNotifications, setUnreadNotifications] = useState(3);
+  const [darkMode, setDarkMode] = useState(false);
 
   const navigate = (v: View) => {
     setView(v);
@@ -104,9 +115,9 @@ export default function App() {
   };
 
   return (
-    <div id="top" className="min-h-screen bg-cream">
+    <div id="top" className={`min-h-screen ${darkMode ? "bg-midnight" : "bg-cream"}`}>
       <div className="noise-layer" aria-hidden="true" />
-      <Nav view={view} navigate={navigate} savedCount={savedWorkers.size + savedTasks.size} unreadNotifications={unreadNotifications} />
+      <Nav view={view} navigate={navigate} savedCount={savedWorkers.size + savedTasks.size} unreadNotifications={unreadNotifications} darkMode={darkMode} setDarkMode={setDarkMode} />
       <Toast toast={toast} />
       <main>
         {view === "home" && <Home navigate={navigate} />}
@@ -129,6 +140,16 @@ export default function App() {
         {view === "disputes" && <Disputes navigate={navigate} showToast={showToast} />}
         {view === "referrals" && <Referrals navigate={navigate} showToast={showToast} />}
         {view === "achievements" && <Achievements navigate={navigate} />}
+        {view === "social-sharing" && <SocialSharing navigate={navigate} showToast={showToast} />}
+        {view === "coupons" && <CouponSystem navigate={navigate} showToast={showToast} />}
+        {view === "loyalty" && <LoyaltyProgram navigate={navigate} />}
+        {view === "leaderboard" && <Leaderboard navigate={navigate} />}
+        {view === "team" && <TeamManagement navigate={navigate} showToast={showToast} />}
+        {view === "video-call" && <VideoCallIntegration navigate={navigate} showToast={showToast} />}
+        {view === "language" && <MultiLanguageSupport navigate={navigate} showToast={showToast} />}
+        {view === "forecasting" && <RevenueForecasting navigate={navigate} />}
+        {view === "trends" && <MarketTrends navigate={navigate} />}
+        {view === "insights" && <CustomerInsights navigate={navigate} />}
       </main>
       <Footer navigate={navigate} />
     </div>
@@ -153,7 +174,7 @@ function Toast({ toast }: { toast: { message: string; type: "success" | "error" 
 }
 
 // ===== NAVIGATION =====
-function Nav({ view, navigate, savedCount, unreadNotifications }: { view: View; navigate: (v: View) => void; savedCount: number; unreadNotifications: number }) {
+function Nav({ view, navigate, savedCount, unreadNotifications, darkMode, setDarkMode }: { view: View; navigate: (v: View) => void; savedCount: number; unreadNotifications: number; darkMode: boolean; setDarkMode: (v: boolean) => void }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -218,6 +239,22 @@ function Nav({ view, navigate, savedCount, unreadNotifications }: { view: View; 
               )}
             </button>
             <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="hidden rounded-full bg-white/10 p-2.5 text-white transition-all hover:bg-white/20 md:block"
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? (
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              )}
+            </button>
+            <button
               onClick={() => navigate("my-profile")}
               className="hidden rounded-full bg-gradient-to-r from-indigo to-violet p-0.5 transition-all hover:scale-105 md:block"
               aria-label="Profile"
@@ -262,6 +299,14 @@ function Nav({ view, navigate, savedCount, unreadNotifications }: { view: View; 
               { label: "Messages", view: "messages" as View, icon: "💬" },
               { label: "Notifications", view: "notifications" as View, icon: "🔔" },
               { label: "Analytics", view: "analytics" as View, icon: "📈" },
+              { label: "Coupons", view: "coupons" as View, icon: "🎫" },
+              { label: "Loyalty", view: "loyalty" as View, icon: "🏆" },
+              { label: "Leaderboard", view: "leaderboard" as View, icon: "🥇" },
+              { label: "Team", view: "team" as View, icon: "👥" },
+              { label: "Video Call", view: "video-call" as View, icon: "📹" },
+              { label: "Language", view: "language" as View, icon: "🌍" },
+              { label: "Market Trends", view: "trends" as View, icon: "📊" },
+              { label: "Insights", view: "insights" as View, icon: "💡" },
             ].map((item) => (
               <button
                 key={item.view}
@@ -3735,6 +3780,1129 @@ function Achievements({ navigate }: { navigate: (v: View) => void }) {
                   <span className="text-3xl">{reward.icon}</span>
                   <h3 className="mt-3 font-bold">{reward.title}</h3>
                   <p className="mt-1 text-sm text-white/70">{reward.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== SOCIAL SHARING =====
+function SocialSharing({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [shareUrl, setShareUrl] = useState("https://skillhub.com/user/john-doe");
+  const [shareText, setShareText] = useState("Check out my profile on Skillhub! I'm hiring for cleaning and plumbing tasks.");
+
+  const socialPlatforms = [
+    { name: "Facebook", icon: "📘", color: "from-blue-600 to-blue-700" },
+    { name: "Twitter", icon: "🐦", color: "from-sky-400 to-sky-500" },
+    { name: "LinkedIn", icon: "💼", color: "from-blue-700 to-blue-800" },
+    { name: "WhatsApp", icon: "💬", color: "from-green-500 to-green-600" },
+    { name: "Telegram", icon: "✈️", color: "from-blue-400 to-blue-500" },
+    { name: "Email", icon: "📧", color: "from-red-500 to-red-600" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-4xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Social Sharing</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Share & Connect</h1>
+            <p className="mt-3 text-lg text-midnight/60">Share your profile and tasks with your network</p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={100}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Share Your Profile</h2>
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                  Share URL
+                </label>
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={shareUrl}
+                    onChange={(e) => setShareUrl(e.target.value)}
+                    className="flex-1 rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(shareUrl);
+                      showToast("URL copied to clipboard!", "success");
+                    }}
+                    className="rounded-2xl bg-gradient-to-r from-indigo to-violet px-6 py-3 font-semibold text-white shadow-lg transition-all hover:scale-105"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                  Share Message
+                </label>
+                <textarea
+                  value={shareText}
+                  onChange={(e) => setShareText(e.target.value)}
+                  rows={4}
+                  className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <h3 className="font-display text-xl font-bold">Share on Social Media</h3>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {socialPlatforms.map((platform) => (
+                  <button
+                    key={platform.name}
+                    onClick={() => showToast(`Shared on ${platform.name}!`, "success")}
+                    className={`flex items-center gap-3 rounded-2xl bg-gradient-to-r ${platform.color} p-4 text-white shadow-lg transition-all hover:scale-105`}
+                  >
+                    <span className="text-2xl">{platform.icon}</span>
+                    <span className="font-semibold">{platform.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== COUPON SYSTEM =====
+function CouponSystem({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [couponCode, setCouponCode] = useState("");
+
+  const availableCoupons = [
+    { code: "WELCOME20", discount: "20% off", desc: "First task discount", expiry: "Dec 31, 2024", minSpend: "¥5,000" },
+    { code: "REFER10", discount: "¥1,000 off", desc: "Referral bonus", expiry: "Jan 15, 2025", minSpend: "¥10,000" },
+    { code: "LOYALTY15", discount: "15% off", desc: "Loyalty reward", expiry: "Feb 28, 2025", minSpend: "¥8,000" },
+  ];
+
+  const myCoupons = [
+    { code: "BDAY25", discount: "25% off", desc: "Birthday special", used: false, expiry: "Dec 20, 2024" },
+    { code: "WELCOME20", discount: "20% off", desc: "First task", used: true, expiry: "Dec 31, 2024" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-5xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Coupons</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Coupons & Discounts</h1>
+            <p className="mt-3 text-lg text-midnight/60">Save more with exclusive coupons</p>
+          </div>
+        </Reveal>
+
+        {/* Apply Coupon */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl bg-gradient-to-r from-indigo via-violet to-amber p-8 text-white shadow-2xl">
+            <h2 className="font-display text-2xl font-bold">Apply Coupon Code</h2>
+            <div className="mt-4 flex gap-3">
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                placeholder="Enter coupon code"
+                className="flex-1 rounded-2xl bg-white/20 px-5 py-3 text-white placeholder:text-white/50 outline-none backdrop-blur-sm"
+              />
+              <button
+                onClick={() => {
+                  if (couponCode) {
+                    showToast("Coupon applied successfully!", "success");
+                    setCouponCode("");
+                  } else {
+                    showToast("Please enter a coupon code", "error");
+                  }
+                }}
+                className="rounded-2xl bg-white px-6 py-3 font-semibold text-midnight shadow-lg transition-all hover:scale-105"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Available Coupons */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Available Coupons</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {availableCoupons.map((coupon) => (
+                <div key={coupon.code} className="rounded-2xl border-2 border-indigo/30 bg-indigo/5 p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-indigo">{coupon.desc}</p>
+                      <p className="mt-2 font-display text-3xl font-black text-indigo">{coupon.discount}</p>
+                    </div>
+                    <span className="rounded-full bg-indigo/10 px-3 py-1 font-mono text-xs font-semibold text-indigo">
+                      {coupon.code}
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between border-t border-midnight/10 pt-4">
+                    <div>
+                      <p className="font-mono text-xs text-midnight/60">Min. spend: {coupon.minSpend}</p>
+                      <p className="font-mono text-xs text-midnight/40">Expires: {coupon.expiry}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setCouponCode(coupon.code);
+                        showToast("Coupon code copied!", "success");
+                      }}
+                      className="rounded-full bg-indigo px-4 py-2 font-mono text-xs font-semibold text-white"
+                    >
+                      Use
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* My Coupons */}
+        <Reveal delay={200}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">My Coupons</h2>
+            <div className="mt-6 space-y-4">
+              {myCoupons.map((coupon) => (
+                <div key={coupon.code} className={`rounded-2xl border-2 p-6 ${coupon.used ? "border-midnight/10 bg-mist/50 opacity-60" : "border-emerald/30 bg-emerald/5"}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                          {coupon.code}
+                        </span>
+                        {coupon.used && (
+                          <span className="rounded-full bg-midnight/10 px-3 py-1 font-mono text-xs font-semibold text-midnight/60">
+                            Used
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-2 font-display text-2xl font-bold">{coupon.discount}</p>
+                      <p className="mt-1 text-sm text-midnight/60">{coupon.desc}</p>
+                    </div>
+                    <p className="font-mono text-xs text-midnight/40">Expires: {coupon.expiry}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== LOYALTY PROGRAM =====
+function LoyaltyProgram({ navigate }: { navigate: (v: View) => void }) {
+  const currentTier = "Gold";
+  const points = 2450;
+  const nextTier = "Platinum";
+  const pointsToNext = 550;
+
+  const tiers = [
+    { name: "Bronze", points: 0, benefits: ["Basic support", "Standard fees"], color: "from-amber-700 to-amber-800" },
+    { name: "Silver", points: 1000, benefits: ["Priority support", "5% fee discount", "Early access"], color: "from-gray-400 to-gray-500" },
+    { name: "Gold", points: 2000, benefits: ["VIP support", "10% fee discount", "Exclusive features", "Free referrals"], color: "from-amber-400 to-amber-500" },
+    { name: "Platinum", points: 3000, benefits: ["24/7 dedicated support", "15% fee discount", "All Gold benefits", "Custom solutions"], color: "from-indigo to-violet" },
+  ];
+
+  const recentActivity = [
+    { action: "Completed task", points: "+100", date: "Dec 10, 2024" },
+    { action: "Left review", points: "+50", date: "Dec 8, 2024" },
+    { action: "Referred friend", points: "+200", date: "Dec 5, 2024" },
+    { action: "Redeemed coupon", points: "-150", date: "Dec 3, 2024" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Loyalty</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Loyalty Program</h1>
+            <p className="mt-3 text-lg text-midnight/60">Earn points and unlock exclusive benefits</p>
+          </div>
+        </Reveal>
+
+        {/* Current Status */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 p-8 text-white shadow-2xl">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="font-mono text-sm uppercase tracking-[0.2em] text-white/70">Current Tier</p>
+                <p className="mt-2 font-display text-5xl font-black">{currentTier}</p>
+                <p className="mt-3 font-mono text-sm text-white/80">{points.toLocaleString()} points</p>
+              </div>
+              <div className="text-right">
+                <p className="font-mono text-sm text-white/70">Next tier: {nextTier}</p>
+                <p className="mt-2 font-display text-3xl font-bold">{pointsToNext} points to go</p>
+                <div className="mt-3 h-2 w-48 overflow-hidden rounded-full bg-white/20">
+                  <div className="h-full rounded-full bg-white" style={{ width: `${(points / 3000) * 100}%` }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Tiers */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Membership Tiers</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {tiers.map((tier) => (
+                <div
+                  key={tier.name}
+                  className={`rounded-2xl border-2 p-6 ${
+                    tier.name === currentTier ? "border-amber bg-amber/5" : "border-midnight/10"
+                  }`}
+                >
+                  <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br ${tier.color} text-2xl font-bold text-white`}>
+                    {tier.name.charAt(0)}
+                  </div>
+                  <h3 className="font-display text-xl font-bold">{tier.name}</h3>
+                  <p className="mt-1 font-mono text-sm text-midnight/60">{tier.points}+ points</p>
+                  <ul className="mt-4 space-y-2">
+                    {tier.benefits.map((benefit) => (
+                      <li key={benefit} className="flex items-center gap-2 text-sm text-midnight/70">
+                        <IconCheck className="h-4 w-4 text-emerald" />
+                        {benefit}
+                      </li>
+                    ))}
+                  </ul>
+                  {tier.name === currentTier && (
+                    <span className="mt-4 inline-block rounded-full bg-amber px-3 py-1 font-mono text-xs font-semibold text-white">
+                      Current Tier
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Recent Activity */}
+        <Reveal delay={200}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Recent Activity</h2>
+            <div className="mt-6 space-y-3">
+              {recentActivity.map((activity, i) => (
+                <div key={i} className="flex items-center justify-between rounded-2xl border border-midnight/10 bg-cream p-4">
+                  <div>
+                    <p className="font-semibold">{activity.action}</p>
+                    <p className="font-mono text-xs text-midnight/50">{activity.date}</p>
+                  </div>
+                  <p className={`font-display text-xl font-bold ${activity.points.startsWith("+") ? "text-emerald" : "text-rose"}`}>
+                    {activity.points}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== LEADERBOARD =====
+function Leaderboard({ navigate }: { navigate: (v: View) => void }) {
+  const [timeframe, setTimeframe] = useState<"week" | "month" | "all">("month");
+
+  const topWorkers = [
+    { rank: 1, name: "Yuki Tanaka", rating: 5.0, tasks: 389, earnings: "¥856,000", avatar: "👩" },
+    { rank: 2, name: "Ahmed Hassan", rating: 4.9, tasks: 203, earnings: "¥456,000", avatar: "👨‍🔧" },
+    { rank: 3, name: "Maria Silva", rating: 4.8, tasks: 156, earnings: "¥312,000", avatar: "👩‍🍳" },
+    { rank: 4, name: "Priya Sharma", rating: 4.9, tasks: 245, earnings: "¥512,000", avatar: "👩‍⚕️" },
+    { rank: 5, name: "Fatima Al-Zahra", rating: 4.9, tasks: 312, earnings: "¥624,000", avatar: "🧹" },
+  ];
+
+  const topClients = [
+    { rank: 1, name: "Shinjuku Grand Hotel", tasks: 156, spent: "¥2,340,000", rating: 4.8, avatar: "🏨" },
+    { rank: 2, name: "Al Fardan Warehouse", tasks: 98, spent: "¥1,560,000", rating: 4.6, avatar: "📦" },
+    { rank: 3, name: "Café Central", tasks: 67, spent: "¥890,000", rating: 4.9, avatar: "☕" },
+    { rank: 4, name: "GreenLeaf Restaurant", tasks: 54, spent: "¥720,000", rating: 4.7, avatar: "🌿" },
+    { rank: 5, name: "Portside Logistics", tasks: 89, spent: "¥1,230,000", rating: 4.5, avatar: "🚢" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+            <div>
+              <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Leaderboard</p>
+              <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Top Performers</h1>
+              <p className="mt-3 text-lg text-midnight/60">See who's leading the platform</p>
+            </div>
+            <div className="flex gap-2 rounded-2xl border-2 border-midnight/10 bg-white p-2">
+              {[
+                { id: "week" as const, label: "This Week" },
+                { id: "month" as const, label: "This Month" },
+                { id: "all" as const, label: "All Time" },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTimeframe(t.id)}
+                  className={`rounded-xl px-4 py-2 font-semibold transition-all ${
+                    timeframe === t.id ? "bg-gradient-to-r from-indigo to-violet text-white" : "text-midnight/60 hover:bg-mist"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Top Workers */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">🏆 Top Workers</h2>
+            <div className="mt-6 space-y-3">
+              {topWorkers.map((worker) => (
+                <div
+                  key={worker.rank}
+                  className={`flex items-center gap-4 rounded-2xl border-2 p-5 ${
+                    worker.rank === 1
+                      ? "border-amber bg-amber/5"
+                      : worker.rank === 2
+                        ? "border-gray-400 bg-gray-50"
+                        : worker.rank === 3
+                          ? "border-amber-700 bg-amber-50"
+                          : "border-midnight/10 bg-cream"
+                  }`}
+                >
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-full text-2xl ${
+                    worker.rank === 1 ? "bg-amber" : worker.rank === 2 ? "bg-gray-400" : worker.rank === 3 ? "bg-amber-700" : "bg-mist"
+                  }`}>
+                    {worker.rank <= 3 ? "🏆" : `#${worker.rank}`}
+                  </div>
+                  <span className="text-3xl">{worker.avatar}</span>
+                  <div className="flex-1">
+                    <p className="font-display text-lg font-bold">{worker.name}</p>
+                    <div className="mt-1 flex items-center gap-3 font-mono text-sm">
+                      <span className="flex items-center gap-1">
+                        <IconStar className="h-4 w-4 text-amber" />
+                        {worker.rating}
+                      </span>
+                      <span className="text-midnight/40">·</span>
+                      <span>{worker.tasks} tasks</span>
+                    </div>
+                  </div>
+                  <p className="font-display text-xl font-bold">{worker.earnings}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Top Clients */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">💼 Top Clients</h2>
+            <div className="mt-6 space-y-3">
+              {topClients.map((client) => (
+                <div key={client.rank} className="flex items-center gap-4 rounded-2xl border-2 border-midnight/10 bg-cream p-5">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-full text-2xl ${
+                    client.rank === 1 ? "bg-amber" : client.rank === 2 ? "bg-gray-400" : client.rank === 3 ? "bg-amber-700" : "bg-mist"
+                  }`}>
+                    {client.rank <= 3 ? "🏆" : `#${client.rank}`}
+                  </div>
+                  <span className="text-3xl">{client.avatar}</span>
+                  <div className="flex-1">
+                    <p className="font-display text-lg font-bold">{client.name}</p>
+                    <div className="mt-1 flex items-center gap-3 font-mono text-sm">
+                      <span>{client.tasks} tasks posted</span>
+                      <span className="text-midnight/40">·</span>
+                      <span className="flex items-center gap-1">
+                        <IconStar className="h-4 w-4 text-amber" />
+                        {client.rating}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="font-display text-xl font-bold">{client.spent}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== TEAM MANAGEMENT =====
+function TeamManagement({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [showInviteModal, setShowInviteModal] = useState(false);
+
+  const teamMembers = [
+    { id: 1, name: "John Doe", role: "Owner", email: "john@example.com", status: "Active", avatar: "👨‍💼" },
+    { id: 2, name: "Sarah Johnson", role: "Manager", email: "sarah@example.com", status: "Active", avatar: "👩‍💼" },
+    { id: 3, name: "Mike Chen", role: "Admin", email: "mike@example.com", status: "Active", avatar: "👨‍💻" },
+    { id: 4, name: "Emily Davis", role: "Member", email: "emily@example.com", status: "Pending", avatar: "👩‍🎨" },
+  ];
+
+  const roles = [
+    { name: "Owner", permissions: ["Full access", "Manage billing", "Delete account"] },
+    { name: "Manager", permissions: ["Manage team", "View analytics", "Approve tasks"] },
+    { name: "Admin", permissions: ["Post tasks", "View reports", "Manage workers"] },
+    { name: "Member", permissions: ["Post tasks", "View own tasks", "Basic analytics"] },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+            <div>
+              <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Team</p>
+              <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Team Management</h1>
+              <p className="mt-3 text-lg text-midnight/60">Manage your team members and permissions</p>
+            </div>
+            <button
+              onClick={() => setShowInviteModal(true)}
+              className="rounded-full bg-gradient-to-r from-indigo to-violet px-6 py-3 font-semibold text-white shadow-lg transition-all hover:scale-105"
+            >
+              + Invite Member
+            </button>
+          </div>
+        </Reveal>
+
+        {/* Team Members */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Team Members ({teamMembers.length})</h2>
+            <div className="mt-6 space-y-3">
+              {teamMembers.map((member) => (
+                <div key={member.id} className="flex items-center gap-4 rounded-2xl border border-midnight/10 bg-cream p-5">
+                  <span className="text-4xl">{member.avatar}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-display text-lg font-bold">{member.name}</p>
+                      <span className={`rounded-full px-3 py-1 font-mono text-xs font-semibold ${
+                        member.status === "Active" ? "bg-emerald/10 text-emerald" : "bg-amber/10 text-amber"
+                      }`}>
+                        {member.status}
+                      </span>
+                    </div>
+                    <p className="font-mono text-sm text-midnight/60">{member.email}</p>
+                    <p className="mt-1 font-mono text-xs text-midnight/40">Role: {member.role}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="rounded-full border border-midnight/20 px-4 py-2 font-mono text-xs font-semibold text-midnight hover:bg-mist">
+                      Edit
+                    </button>
+                    {member.role !== "Owner" && (
+                      <button className="rounded-full border border-rose/30 px-4 py-2 font-mono text-xs font-semibold text-rose hover:bg-rose/5">
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Roles & Permissions */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Roles & Permissions</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {roles.map((role) => (
+                <div key={role.name} className="rounded-2xl border-2 border-midnight/10 bg-cream p-6">
+                  <h3 className="font-display text-xl font-bold">{role.name}</h3>
+                  <ul className="mt-4 space-y-2">
+                    {role.permissions.map((permission) => (
+                      <li key={permission} className="flex items-center gap-2 text-sm text-midnight/70">
+                        <IconCheck className="h-4 w-4 text-emerald" />
+                        {permission}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Invite Modal */}
+        {showInviteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-midnight/80 p-5">
+            <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
+              <h2 className="font-display text-2xl font-bold">Invite Team Member</h2>
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="colleague@example.com"
+                    className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block font-mono text-sm font-semibold uppercase tracking-[0.18em] text-midnight/60">
+                    Role
+                  </label>
+                  <select className="w-full rounded-2xl border-2 border-midnight/20 bg-cream px-5 py-3 outline-none focus:border-indigo">
+                    <option>Member</option>
+                    <option>Admin</option>
+                    <option>Manager</option>
+                  </select>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowInviteModal(false)}
+                    className="flex-1 rounded-2xl border-2 border-midnight/20 py-3 font-semibold text-midnight transition-all hover:bg-mist"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      showToast("Invitation sent!", "success");
+                      setShowInviteModal(false);
+                    }}
+                    className="flex-1 rounded-2xl bg-gradient-to-r from-indigo to-violet py-3 font-semibold text-white shadow-lg transition-all hover:scale-105"
+                  >
+                    Send Invite
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ===== VIDEO CALL INTEGRATION =====
+function VideoCallIntegration({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [inCall, setInCall] = useState(false);
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-5xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Video Calls</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Video Consultations</h1>
+            <p className="mt-3 text-lg text-midnight/60">Connect with workers face-to-face before hiring</p>
+          </div>
+        </Reveal>
+
+        {/* Call Interface */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            {inCall ? (
+              <div className="space-y-6">
+                <div className="relative aspect-video overflow-hidden rounded-2xl bg-gradient-to-br from-indigo to-violet">
+                  <div className="absolute inset-0 flex items-center justify-center text-9xl">
+                    👩
+                  </div>
+                  <div className="absolute bottom-4 left-4 rounded-full bg-midnight/50 px-4 py-2 text-sm text-white backdrop-blur-sm">
+                    Yuki Tanaka
+                  </div>
+                  <div className="absolute bottom-4 right-4 flex gap-2">
+                    <button
+                      onClick={() => showToast("Microphone muted", "info")}
+                      className="rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all hover:bg-white/30"
+                    >
+                      🎤
+                    </button>
+                    <button
+                      onClick={() => showToast("Camera off", "info")}
+                      className="rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all hover:bg-white/30"
+                    >
+                      📹
+                    </button>
+                    <button
+                      onClick={() => {
+                        setInCall(false);
+                        showToast("Call ended", "info");
+                      }}
+                      className="rounded-full bg-rose p-3 text-white transition-all hover:bg-rose/80"
+                    >
+                      📞
+                    </button>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="font-mono text-sm text-midnight/60">Call duration: 2:34</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <span className="text-6xl">📹</span>
+                  <h2 className="mt-4 font-display text-2xl font-bold">Start a Video Call</h2>
+                  <p className="mt-2 text-midnight/60">Schedule or start an instant call with workers</p>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <button
+                    onClick={() => {
+                      setInCall(true);
+                      showToast("Connecting to Yuki Tanaka...", "info");
+                    }}
+                    className="rounded-2xl bg-gradient-to-r from-indigo to-violet p-6 text-white shadow-lg transition-all hover:scale-105"
+                  >
+                    <span className="text-4xl">📞</span>
+                    <p className="mt-3 font-semibold">Instant Call</p>
+                    <p className="mt-1 text-sm text-white/70">Call available workers now</p>
+                  </button>
+                  <button
+                    onClick={() => showToast("Schedule feature coming soon!", "info")}
+                    className="rounded-2xl border-2 border-midnight/20 p-6 transition-all hover:bg-mist"
+                  >
+                    <span className="text-4xl">📅</span>
+                    <p className="mt-3 font-semibold">Schedule Call</p>
+                    <p className="mt-1 text-sm text-midnight/60">Book a time with workers</p>
+                  </button>
+                </div>
+                <div className="rounded-2xl bg-cream p-6">
+                  <h3 className="font-display text-lg font-bold">Recent Calls</h3>
+                  <div className="mt-4 space-y-3">
+                    {[
+                      { worker: "Yuki Tanaka", date: "Dec 10, 2024", duration: "15 min" },
+                      { worker: "Ahmed Hassan", date: "Dec 8, 2024", duration: "10 min" },
+                    ].map((call, i) => (
+                      <div key={i} className="flex items-center justify-between rounded-xl bg-white p-4">
+                        <div>
+                          <p className="font-semibold">{call.worker}</p>
+                          <p className="font-mono text-xs text-midnight/50">{call.date} · {call.duration}</p>
+                        </div>
+                        <button className="rounded-full bg-indigo/10 px-4 py-2 font-mono text-xs font-semibold text-indigo">
+                          Call Again
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== MULTI-LANGUAGE SUPPORT =====
+function MultiLanguageSupport({ navigate, showToast }: { navigate: (v: View) => void; showToast: (message: string, type?: "success" | "error" | "info") => void }) {
+  const [currentLanguage, setCurrentLanguage] = useState("en");
+
+  const languages = [
+    { code: "en", name: "English", flag: "🇺🇸", native: "English" },
+    { code: "bn", name: "Bengali", flag: "🇧🇩", native: "বাংলা" },
+    { code: "ja", name: "Japanese", flag: "🇯🇵", native: "日本語" },
+    { code: "es", name: "Spanish", flag: "🇪🇸", native: "Español" },
+    { code: "fr", name: "French", flag: "🇫🇷", native: "Français" },
+    { code: "de", name: "German", flag: "🇩🇪", native: "Deutsch" },
+    { code: "zh", name: "Chinese", flag: "🇨🇳", native: "中文" },
+    { code: "ar", name: "Arabic", flag: "🇸🇦", native: "العربية" },
+    { code: "pt", name: "Portuguese", flag: "🇵🇹", native: "Português" },
+    { code: "hi", name: "Hindi", flag: "🇮🇳", native: "हिन्दी" },
+  ];
+
+  const translations = {
+    en: { welcome: "Welcome", getStarted: "Get Started", learnMore: "Learn More" },
+    bn: { welcome: "স্বাগতম", getStarted: "শুরু করুন", learnMore: "আরও জানুন" },
+    ja: { welcome: "ようこそ", getStarted: "始める", learnMore: "詳細" },
+    es: { welcome: "Bienvenido", getStarted: "Comenzar", learnMore: "Más información" },
+    fr: { welcome: "Bienvenue", getStarted: "Commencer", learnMore: "En savoir plus" },
+    de: { welcome: "Willkommen", getStarted: "Loslegen", learnMore: "Mehr erfahren" },
+    zh: { welcome: "欢迎", getStarted: "开始", learnMore: "了解更多" },
+    ar: { welcome: "أهلاً", getStarted: "ابدأ", learnMore: "اعرف المزيد" },
+    pt: { welcome: "Bem-vindo", getStarted: "Começar", learnMore: "Saiba mais" },
+    hi: { welcome: "स्वागत", getStarted: "शुरू करें", learnMore: "और जानें" },
+  };
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-5xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Language</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">
+              {translations[currentLanguage as keyof typeof translations].welcome}
+            </h1>
+            <p className="mt-3 text-lg text-midnight/60">Choose your preferred language</p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={100}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Available Languages</h2>
+            <div className="mt-6 grid gap-3 md:grid-cols-2">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setCurrentLanguage(lang.code);
+                    showToast(`Language changed to ${lang.name}!`, "success");
+                  }}
+                  className={`flex items-center gap-4 rounded-2xl border-2 p-5 text-left transition-all hover:scale-[1.02] ${
+                    currentLanguage === lang.code
+                      ? "border-indigo bg-indigo/5"
+                      : "border-midnight/10 bg-cream hover:border-indigo"
+                  }`}
+                >
+                  <span className="text-4xl">{lang.flag}</span>
+                  <div className="flex-1">
+                    <p className="font-display text-lg font-bold">{lang.name}</p>
+                    <p className="font-mono text-sm text-midnight/60">{lang.native}</p>
+                  </div>
+                  {currentLanguage === lang.code && (
+                    <IconCheck className="h-6 w-6 text-indigo" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Preview */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl bg-gradient-to-r from-indigo via-violet to-amber p-8 text-white shadow-2xl">
+            <h2 className="font-display text-2xl font-bold">Preview</h2>
+            <div className="mt-6 space-y-4">
+              <div className="rounded-2xl bg-white/10 p-5 backdrop-blur-sm">
+                <p className="font-mono text-sm text-white/70">Welcome Message</p>
+                <p className="mt-2 font-display text-2xl font-bold">
+                  {translations[currentLanguage as keyof typeof translations].welcome}
+                </p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-2xl bg-white/10 p-5 backdrop-blur-sm">
+                  <p className="font-mono text-sm text-white/70">Button 1</p>
+                  <p className="mt-2 font-semibold">
+                    {translations[currentLanguage as keyof typeof translations].getStarted}
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white/10 p-5 backdrop-blur-sm">
+                  <p className="font-mono text-sm text-white/70">Button 2</p>
+                  <p className="mt-2 font-semibold">
+                    {translations[currentLanguage as keyof typeof translations].learnMore}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== REVENUE FORECASTING =====
+function RevenueForecasting({ navigate }: { navigate: (v: View) => void }) {
+  const currentRevenue = 285400;
+  const forecastedRevenue = 425000;
+  const growth = 48.9;
+
+  const monthlyData = [
+    { month: "Jul", actual: 180000, forecast: 195000 },
+    { month: "Aug", actual: 220000, forecast: 235000 },
+    { month: "Sep", actual: 195000, forecast: 210000 },
+    { month: "Oct", actual: 280000, forecast: 295000 },
+    { month: "Nov", actual: 245000, forecast: 260000 },
+    { month: "Dec", actual: 285400, forecast: 300000 },
+    { month: "Jan", actual: null, forecast: 320000 },
+    { month: "Feb", actual: null, forecast: 345000 },
+    { month: "Mar", actual: null, forecast: 380000 },
+    { month: "Apr", actual: null, forecast: 410000 },
+    { month: "May", actual: null, forecast: 425000 },
+  ];
+
+  const insights = [
+    { title: "Strong Growth", desc: "Revenue increased 48.9% compared to last quarter", icon: "📈", color: "text-emerald" },
+    { title: "Seasonal Peak", desc: "Expect 25% increase during holiday season", icon: "🎄", color: "text-amber" },
+    { title: "New Markets", desc: "Expansion to 3 new cities could add ¥150k/month", icon: "🌍", color: "text-indigo" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Forecasting</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Revenue Forecasting</h1>
+            <p className="mt-3 text-lg text-midnight/60">AI-powered predictions and insights</p>
+          </div>
+        </Reveal>
+
+        {/* Key Metrics */}
+        <Reveal delay={100}>
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="rounded-3xl border-2 border-midnight/10 bg-white p-6 shadow-xl">
+              <p className="font-mono text-sm text-midnight/60">Current Revenue</p>
+              <p className="mt-2 font-display text-4xl font-black">¥{currentRevenue.toLocaleString()}</p>
+              <p className="mt-2 font-mono text-sm text-midnight/50">This month</p>
+            </div>
+            <div className="rounded-3xl border-2 border-emerald/30 bg-emerald/5 p-6 shadow-xl">
+              <p className="font-mono text-sm text-midnight/60">Forecasted (5 months)</p>
+              <p className="mt-2 font-display text-4xl font-black text-emerald">¥{forecastedRevenue.toLocaleString()}</p>
+              <p className="mt-2 font-mono text-sm text-emerald">+{growth}% growth</p>
+            </div>
+            <div className="rounded-3xl border-2 border-indigo/30 bg-indigo/5 p-6 shadow-xl">
+              <p className="font-mono text-sm text-midnight/60">Confidence Level</p>
+              <p className="mt-2 font-display text-4xl font-black text-indigo">87%</p>
+              <p className="mt-2 font-mono text-sm text-midnight/50">AI prediction accuracy</p>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Chart */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Revenue Trend & Forecast</h2>
+            <div className="mt-6 flex h-64 items-end justify-between gap-2">
+              {monthlyData.map((data, i) => (
+                <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                  <div className="flex w-full flex-col gap-1" style={{ height: "100%" }}>
+                    {data.actual && (
+                      <div
+                        className="flex-1 rounded-t-lg bg-gradient-to-t from-indigo to-violet"
+                        style={{ height: `${(data.actual / 450000) * 100}%` }}
+                      />
+                    )}
+                    {data.forecast && (
+                      <div
+                        className={`flex-1 rounded-t-lg ${data.actual ? "bg-gradient-to-t from-amber/50 to-amber/30" : "bg-gradient-to-t from-amber to-amber/70"}`}
+                        style={{ height: `${(data.forecast / 450000) * 100}%` }}
+                      />
+                    )}
+                  </div>
+                  <span className="font-mono text-xs text-midnight/40">{data.month}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex justify-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 rounded bg-gradient-to-r from-indigo to-violet" />
+                <span className="font-mono text-sm text-midnight/60">Actual</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 rounded bg-gradient-to-r from-amber to-amber/70" />
+                <span className="font-mono text-sm text-midnight/60">Forecast</span>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Insights */}
+        <Reveal delay={200}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">AI Insights</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {insights.map((insight) => (
+                <div key={insight.title} className="rounded-2xl border-2 border-midnight/10 bg-cream p-6">
+                  <span className="text-4xl">{insight.icon}</span>
+                  <h3 className={`mt-4 font-display text-lg font-bold ${insight.color}`}>{insight.title}</h3>
+                  <p className="mt-2 text-sm text-midnight/70">{insight.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== MARKET TRENDS =====
+function MarketTrends({ navigate }: { navigate: (v: View) => void }) {
+  const trends = [
+    { category: "Cleaning", demand: "+35%", avgRate: "¥2,200/hr", topSkills: ["Deep Cleaning", "Eco-friendly"], color: "from-indigo to-violet" },
+    { category: "Plumbing", demand: "+28%", avgRate: "¥3,500/hr", topSkills: ["Pipe Repair", "Installation"], color: "from-violet to-amber" },
+    { category: "Moving", demand: "+42%", avgRate: "¥2,800/hr", topSkills: ["Packing", "Heavy Lifting"], color: "from-amber to-emerald" },
+    { category: "Caregiving", demand: "+55%", avgRate: "¥2,500/hr", topSkills: ["Elderly Care", "First Aid"], color: "from-emerald to-indigo" },
+  ];
+
+  const hotSkills = [
+    { skill: "Deep Cleaning", demand: 95, growth: "+45%" },
+    { skill: "Elderly Care", demand: 88, growth: "+52%" },
+    { skill: "Eco-friendly Cleaning", demand: 82, growth: "+38%" },
+    { skill: "Mobile Repair", demand: 78, growth: "+35%" },
+    { skill: "Pet Care", demand: 75, growth: "+42%" },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Market Trends</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Market Intelligence</h1>
+            <p className="mt-3 text-lg text-midnight/60">Stay ahead with real-time market data</p>
+          </div>
+        </Reveal>
+
+        {/* Category Trends */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Category Trends</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {trends.map((trend) => (
+                <div key={trend.category} className="rounded-2xl border-2 border-midnight/10 bg-cream p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-display text-xl font-bold">{trend.category}</h3>
+                      <p className="mt-1 font-mono text-sm text-midnight/60">Avg: {trend.avgRate}</p>
+                    </div>
+                    <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                      {trend.demand}
+                    </span>
+                  </div>
+                  <div className="mt-4">
+                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-midnight/60">Top Skills</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {trend.topSkills.map((skill) => (
+                        <span key={skill} className="rounded-full bg-indigo/10 px-3 py-1 font-mono text-xs font-semibold text-indigo">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Hot Skills */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">🔥 Hot Skills</h2>
+            <div className="mt-6 space-y-4">
+              {hotSkills.map((skill, i) => (
+                <div key={skill.skill} className="flex items-center gap-4">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo to-violet font-bold text-white">
+                    #{i + 1}
+                  </span>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold">{skill.skill}</p>
+                      <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                        {skill.growth}
+                      </span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-mist">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-indigo to-violet"
+                        style={{ width: `${skill.demand}%` }}
+                      />
+                    </div>
+                    <p className="mt-1 font-mono text-xs text-midnight/50">Demand Score: {skill.demand}/100</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+// ===== CUSTOMER INSIGHTS =====
+function CustomerInsights({ navigate }: { navigate: (v: View) => void }) {
+  const demographics = [
+    { segment: "Young Professionals", percentage: 35, age: "25-34", icon: "💼" },
+    { segment: "Families", percentage: 28, age: "35-44", icon: "👨‍👩‍👧" },
+    { segment: "Seniors", percentage: 22, age: "55+", icon: "👴" },
+    { segment: "Students", percentage: 15, age: "18-24", icon: "🎓" },
+  ];
+
+  const behavior = [
+    { metric: "Avg. Tasks/Month", value: "3.2", change: "+12%", icon: "📊" },
+    { metric: "Avg. Spend/Task", value: "¥18,500", change: "+8%", icon: "💰" },
+    { metric: "Repeat Rate", value: "68%", change: "+15%", icon: "🔄" },
+    { metric: "Satisfaction", value: "4.8/5", change: "+0.2", icon: "⭐" },
+  ];
+
+  const preferences = [
+    { preference: "Same-day service", percentage: 72 },
+    { preference: "Verified workers only", percentage: 89 },
+    { preference: "Mobile booking", percentage: 85 },
+    { preference: "Video consultation", percentage: 45 },
+    { preference: "Eco-friendly options", percentage: 58 },
+  ];
+
+  return (
+    <section className="relative bg-cream pt-32 pb-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <Reveal>
+          <div className="mb-8">
+            <p className="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-indigo">// Insights</p>
+            <h1 className="mt-3 font-display text-4xl font-black tracking-tight md:text-5xl">Customer Insights</h1>
+            <p className="mt-3 text-lg text-midnight/60">Understand your customers better</p>
+          </div>
+        </Reveal>
+
+        {/* Demographics */}
+        <Reveal delay={100}>
+          <div className="rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Customer Demographics</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {demographics.map((demo) => (
+                <div key={demo.segment} className="rounded-2xl border-2 border-midnight/10 bg-cream p-6 text-center">
+                  <span className="text-5xl">{demo.icon}</span>
+                  <p className="mt-4 font-display text-3xl font-black">{demo.percentage}%</p>
+                  <p className="mt-2 font-semibold">{demo.segment}</p>
+                  <p className="mt-1 font-mono text-xs text-midnight/60">Age: {demo.age}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Behavior Metrics */}
+        <Reveal delay={150}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Behavior Metrics</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {behavior.map((metric) => (
+                <div key={metric.metric} className="rounded-2xl border-2 border-midnight/10 bg-cream p-6">
+                  <span className="text-4xl">{metric.icon}</span>
+                  <p className="mt-4 font-display text-3xl font-black">{metric.value}</p>
+                  <p className="mt-2 font-semibold">{metric.metric}</p>
+                  <p className="mt-1 font-mono text-xs text-emerald">{metric.change}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Preferences */}
+        <Reveal delay={200}>
+          <div className="mt-8 rounded-3xl border-2 border-midnight/10 bg-white p-8 shadow-xl">
+            <h2 className="font-display text-2xl font-bold">Customer Preferences</h2>
+            <div className="mt-6 space-y-4">
+              {preferences.map((pref) => (
+                <div key={pref.preference}>
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">{pref.preference}</p>
+                    <span className="font-mono text-sm font-bold text-indigo">{pref.percentage}%</span>
+                  </div>
+                  <div className="mt-2 h-3 overflow-hidden rounded-full bg-mist">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-indigo to-violet"
+                      style={{ width: `${pref.percentage}%` }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
