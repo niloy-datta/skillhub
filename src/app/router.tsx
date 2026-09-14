@@ -9,6 +9,8 @@ import { ProfilePage } from '../pages/Profile';
 import { SettingsPage } from '../pages/Settings';
 import { AuthPage } from '../pages/Auth';
 import { NotFoundPage } from '../pages/NotFound';
+import { JobDetailPage } from '../pages/JobDetail';
+import { CompanyDetailPage } from '../pages/CompanyDetail';
 
 export function AppRouter() {
   return (
@@ -23,6 +25,8 @@ export function AppRouter() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/job/:jobId" element={<JobDetailPage />} />
+        <Route path="/company/:companyId" element={<CompanyDetailPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </HashRouter>

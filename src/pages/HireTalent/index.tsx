@@ -24,36 +24,42 @@ export function HireTalentPage() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {COMPANIES.map((company) => (
-            <div key={company.id} className="rounded-2xl border-2 border-midnight/10 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-start justify-between">
-                <span className="text-4xl">{company.logo}</span>
-                {company.verified && (
-                  <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
-                    ✓ Verified
-                  </span>
-                )}
-              </div>
-
-              <h3 className="mb-2 font-display text-xl font-bold">{company.name}</h3>
-              <p className="mb-4 text-sm text-midnight/60">{company.tagline}</p>
-
-              <div className="mb-4 flex items-center gap-2">
-                <span className="text-amber">★</span>
-                <span className="font-semibold">{company.workerRating}</span>
-                <span className="text-sm text-midnight/50">rating</span>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-midnight/10 pt-4">
-                <div>
-                  <p className="font-display text-lg font-bold">{company.activeJobs}</p>
-                  <p className="text-xs text-midnight/60">Active jobs</p>
+            <Link 
+              key={company.id} 
+              to={`/company/${company.id}`}
+              className="no-underline"
+            >
+              <div className="rounded-2xl border-2 border-midnight/10 bg-white p-6 shadow-sm hover:border-indigo/30 hover:shadow-lg transition-all">
+                <div className="mb-4 flex items-start justify-between">
+                  <span className="text-4xl">{company.logo}</span>
+                  {company.verified && (
+                    <span className="rounded-full bg-emerald/10 px-3 py-1 font-mono text-xs font-semibold text-emerald">
+                      ✓ Verified
+                    </span>
+                  )}
                 </div>
-                <div className="text-right">
-                  <p className="font-display text-lg font-bold">{company.activeShifts}</p>
-                  <p className="text-xs text-midnight/60">Shifts</p>
+
+                <h3 className="mb-2 font-display text-xl font-bold">{company.name}</h3>
+                <p className="mb-4 text-sm text-midnight/60">{company.tagline}</p>
+
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="text-amber">★</span>
+                  <span className="font-semibold">{company.workerRating}</span>
+                  <span className="text-sm text-midnight/50">rating</span>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-midnight/10 pt-4">
+                  <div>
+                    <p className="font-display text-lg font-bold">{company.activeJobs}</p>
+                    <p className="text-xs text-midnight/60">Active jobs</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-display text-lg font-bold">{company.activeShifts}</p>
+                    <p className="text-xs text-midnight/60">Shifts</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
