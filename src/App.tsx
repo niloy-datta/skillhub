@@ -5,6 +5,8 @@ import SavedItemsPage from './pages/SavedItems/index';
 import WorkerDetailsPage from './pages/WorkerDetails/index';
 import TaskDetailsPage from './pages/TaskDetails/index';
 import ErrorBoundary from './components/ErrorBoundary';
+import { ModernHeader } from './components/ModernHeader';
+import { ModernHero } from './components/ModernHero';
 
 // ===== DATA =====
 const WORKERS = [
