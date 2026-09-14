@@ -1,5 +1,10 @@
 import { useState } from 'react';
 import { HashRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import NotificationsPage from './pages/Notifications/index';
+import SavedItemsPage from './pages/SavedItems/index';
+import WorkerDetailsPage from './pages/WorkerDetails/index';
+import TaskDetailsPage from './pages/TaskDetails/index';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // ===== DATA =====
 const WORKERS = [
@@ -72,6 +77,15 @@ function Header() {
         </nav>
 
         <div className="flex gap-3">
+          <Link to="/notifications" className="no-underline px-4 py-2 rounded-full border-2 border-gray-200 text-sm font-semibold text-gray-900 hover:bg-gray-50 relative">
+            🔔
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              2
+            </span>
+          </Link>
+          <Link to="/saved" className="no-underline px-4 py-2 rounded-full border-2 border-gray-200 text-sm font-semibold text-gray-900 hover:bg-gray-50">
+            Saved
+          </Link>
           <Link to="/profile" className="no-underline px-4 py-2 rounded-full border-2 border-gray-200 text-sm font-semibold text-gray-900 hover:bg-gray-50">
             Profile
           </Link>
@@ -816,22 +830,30 @@ function NotFoundPage() {
 
 export default function App() {
   return (
-    <HashRouter>
-      <div className="min-h-screen">
-        <Header />
-        <Routes>
+    <ErrorBoundary>
+      <HashRouter>
+        <div className="min-h-screen">
+          <Header />
+          <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/find-work" element={<FindWorkPage />} />
           <Route path="/hire-talent" element={<HireTalentPage />} />
           <Route path="/post-work" element={<PostWorkPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/messages/:chatId" element={<MessagesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/:workerId" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/saved" element={<SavedItemsPage />} />
+          <Route path="/worker/:workerId" element={<WorkerDetailsPage />} />
+          <Route path="/task/:taskId" element={<TaskDetailsPage />} />
           <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </div>
-    </HashRouter>
+          </Routes>
+        </div>
+      </HashRouter>
+    </ErrorBoundary>
   );
 }
